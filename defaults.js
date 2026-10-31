@@ -60,9 +60,8 @@
      Use *palavra* para deixar em destaque (gradiente azul).           */
   var TEXT_FIELDS = [
     { g: "Geral", k: "pageTitle", l: "Título da página (aba do navegador)" },
-    { g: "Menu do topo", k: "nav1", l: "Link 1" }, { g: "Menu do topo", k: "nav2", l: "Link 2" },
-    { g: "Menu do topo", k: "nav3", l: "Link 3" }, { g: "Menu do topo", k: "nav4", l: "Link 4" },
-    { g: "Menu do topo", k: "nav5", l: "Link 5" }, { g: "Menu do topo", k: "navBtn", l: "Botão do menu" },
+
+
     { g: "Início (topo do site)", k: "heroTag", l: "Etiqueta verde" },
     { g: "Início (topo do site)", k: "heroTitle", l: "Título principal (use *destaque*)", long: true },
     { g: "Início (topo do site)", k: "heroText", l: "Texto abaixo do título", long: true },
@@ -115,7 +114,6 @@
 
   var TEXTS = {
     pageTitle: "Alares – Internet ultrarrápida",
-    nav1: "Planos", nav2: "Vantagens", nav3: "Serviços", nav4: "Avaliações", nav5: "Dúvidas", navBtn: "Assinar",
     heroTag: "Fibra 100% óptica disponível na sua cidade",
     heroTitle: "Internet que *acompanha* a velocidade da sua vida.",
     heroText: "Até 2 Gbps simétricos, Wi-Fi 6 incluso e instalação em 24 horas. Sem fidelidade e sem taxa surpresa.",
