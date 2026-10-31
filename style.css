@@ -247,3 +247,6 @@ footer img{filter:brightness(0) invert(1)}
 .cb .btn[style]{background:transparent!important;color:#fff!important;border:1px solid rgba(255,255,255,.7)!important}
 .sv{box-shadow:0 18px 46px rgba(3,10,70,.45)}
 .gauge svg.ring{overflow:visible}
+.chip{z-index:3}
+.c2{bottom:3%;left:-16%}
+@media(max-width:860px){.c2{bottom:-9%;left:0}.c1{top:0;right:0}}
