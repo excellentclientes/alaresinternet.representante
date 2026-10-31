@@ -1,0 +1,50 @@
+rules_version = '2';
+
+// ============================================================
+//  REGRAS DO FIRESTORE – projeto alares-internet
+//  1) Troque SEU_EMAIL_AQUI pelo e-mail que você criou em
+//     Authentication > Users (o e-mail do painel).
+//  2) Cole tudo em Firestore Database > Regras > Publicar.
+// ============================================================
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAdmin() {
+      return request.auth != null
+          && request.auth.token.email == 'SEU_EMAIL_AQUI';
+    }
+
+    // Conteúdo do site: qualquer visitante lê, só o admin altera
+    match /site/{doc} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Imagens dos cartões: leitura pública, escrita só do admin
+    match /images/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Pedidos de ligação: o visitante só CRIA (com dados validados);
+    // só o admin lê, altera e exclui.
+    match /leads/{id} {
+      allow create: if request.resource.data.keys().hasOnly(['name', 'phone', 'region', 'status', 'createdAt'])
+                    && request.resource.data.name is string
+                    && request.resource.data.name.size() >= 2
+                    && request.resource.data.name.size() <= 80
+                    && request.resource.data.phone is string
+                    && request.resource.data.phone.size() >= 10
+                    && request.resource.data.phone.size() <= 20
+                    && request.resource.data.region is string
+                    && request.resource.data.region.size() <= 80
+                    && request.resource.data.status == 'novo'
+                    && request.resource.data.createdAt == request.time;
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /{other=**} {
+      allow read, write: if false;
+    }
+  }
+}

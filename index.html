@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Alares – Internet ultrarrápida</title>
+<link rel="icon" type="image/png" href="assets/icone.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+<linearGradient id="gr" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2563ff"/><stop offset="1" stop-color="#00c2ff"/></linearGradient>
+<symbol id="bolt" viewBox="0 0 24 24"><path d="M13 2 4.5 13.5H11L10 22l8.5-11.5H12z"/></symbol>
+<symbol id="wifi" viewBox="0 0 24 24"><path d="M2.5 9a14 14 0 0 1 19 0M5.5 12.5a9.5 9.5 0 0 1 13 0M8.5 16a5 5 0 0 1 7 0"/><circle cx="12" cy="19.5" r=".8" fill="currentColor"/></symbol>
+<symbol id="pin" viewBox="0 0 24 24"><path d="M12 21s-7-6.1-7-11.5a7 7 0 0 1 14 0C19 14.9 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></symbol>
+<symbol id="search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></symbol>
+<symbol id="check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12.3 2.8 2.7L16 9.5"/></symbol>
+<symbol id="shield" viewBox="0 0 24 24"><path d="M12 3 4.5 6v5.5c0 4.6 3.1 8 7.5 9.5 4.4-1.5 7.5-4.9 7.5-9.5V6z"/><path d="m9 12 2.2 2.2L15 10"/></symbol>
+<symbol id="tv" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="12" rx="3"/><path d="M8 21h8M12 17v4"/></symbol>
+<symbol id="game" viewBox="0 0 24 24"><rect x="2.5" y="7" width="19" height="10" rx="5"/><path d="M7 10v4M5 12h4"/><circle cx="16" cy="11" r=".7" fill="currentColor"/><circle cx="18" cy="13" r=".7" fill="currentColor"/></symbol>
+<symbol id="head" viewBox="0 0 24 24"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="13" width="4" height="6" rx="2"/><rect x="17" y="13" width="4" height="6" rx="2"/></symbol>
+<symbol id="rocket" viewBox="0 0 24 24"><path d="M5 19c-.5-2 0-3.5 1.5-5L12 8.5a15 15 0 0 1 8-4.5 15 15 0 0 1-4.5 8L10 17.5C8.5 19 7 19.5 5 19z"/><circle cx="15" cy="9" r="1.5"/><path d="M5 19l-1.5 1.5"/></symbol>
+<symbol id="globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></symbol>
+<symbol id="dn" viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></symbol>
+<symbol id="up" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></symbol>
+<symbol id="chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+<symbol id="call" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></symbol>
+<symbol id="user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+<symbol id="chat" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5"/></symbol>
+</defs></svg>
+
+<header><div class="wrap"><nav>
+<a class="logo" href="#" aria-label="Alares"><img src="assets/logo.png" alt="Alares – representante autorizado" width="249" height="100"></a>
+<ul><li><a href="#planos" data-t="nav1">Planos</a></li><li><a href="#vantagens" data-t="nav2">Vantagens</a></li><li><a href="#servicos" data-t="nav3">Serviços</a></li><li><a href="#avaliacoes" data-t="nav4">Avaliações</a></li><li><a href="#duvidas" data-t="nav5">Dúvidas</a></li></ul>
+<a class="btn" href="#planos" style="padding:10px 18px" data-t="navBtn">Assinar</a>
+</nav></div></header>
+
+<div class="hero">
+<canvas id="net"></canvas>
+<div class="wrap">
+<div>
+<span class="tag"><i></i> <span data-t="heroTag"></span></span>
+<h1 data-t="heroTitle"></h1>
+<p class="l" data-t="heroText"></p>
+<div class="cta"><a class="btn" href="#planos"><svg class="i"><use href="#rocket"/></svg><span data-t="btnPlans"></span></a><a class="btn o" href="#vantagens" data-t="btnWhy"></a><button class="btn o" data-call><svg class="i"><use href="#call"/></svg><span data-t="btnCall"></span></button></div>
+<div class="stats" id="stats"></div>
+</div>
+<div class="gauge">
+<svg class="ring" viewBox="0 0 300 300"><circle class="bg" cx="150" cy="150" r="140"/><circle class="fg" cx="150" cy="150" r="140"/></svg>
+<svg class="mas" viewBox="0 0 200 240" aria-hidden="true">
+<defs><linearGradient id="mb" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#d3e3ff"/></linearGradient>
+<linearGradient id="mv" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#101a45"/><stop offset="1" stop-color="#050a24"/></linearGradient></defs>
+<ellipse class="msh" cx="100" cy="228" rx="42" ry="7" fill="rgba(37,99,255,.22)"/>
+<g class="mfl">
+<path d="M138 178C176 178 184 214 150 220" fill="none" stroke="#00c2ff" stroke-width="5" stroke-linecap="round"/><rect x="140" y="214" width="16" height="12" rx="3" fill="#2563ff" transform="rotate(-20 148 220)"/>
+<path d="M62 138Q36 150 40 176" fill="none" stroke="#2563ff" stroke-width="9" stroke-linecap="round"/><circle cx="40" cy="178" r="9" fill="url(#mb)" stroke="#2563ff" stroke-width="3"/>
+<rect x="76" y="192" width="20" height="20" rx="9" fill="url(#mb)" stroke="#2563ff" stroke-width="3"/><rect x="104" y="192" width="20" height="20" rx="9" fill="url(#mb)" stroke="#2563ff" stroke-width="3"/>
+<rect x="58" y="118" width="84" height="80" rx="32" fill="url(#mb)" stroke="#2563ff" stroke-width="3"/>
+<image href="assets/logo.png" x="70" y="146" width="60" height="24" preserveAspectRatio="xMidYMid meet"/>
+<g class="warm"><path d="M138 138Q166 132 172 108" fill="none" stroke="#2563ff" stroke-width="9" stroke-linecap="round"/><circle cx="172" cy="104" r="9" fill="url(#mb)" stroke="#2563ff" stroke-width="3"/></g>
+<line x1="100" y1="40" x2="100" y2="20" stroke="#2563ff" stroke-width="4" stroke-linecap="round"/>
+<circle class="ant" cx="100" cy="14" r="6" fill="#00c2ff"/>
+<path class="wv1" d="M86 8a20 20 0 0 1 28 0" fill="none" stroke="#00c2ff" stroke-width="3" stroke-linecap="round"/><path class="wv2" d="M78 0a32 32 0 0 1 44 0" fill="none" stroke="#00c2ff" stroke-width="3" stroke-linecap="round"/>
+<circle cx="46" cy="78" r="8" fill="#2563ff"/><circle cx="154" cy="78" r="8" fill="#2563ff"/>
+<rect x="48" y="38" width="104" height="80" rx="36" fill="url(#mb)" stroke="#2563ff" stroke-width="3"/>
+<rect x="60" y="52" width="80" height="52" rx="24" fill="url(#mv)"/>
+<ellipse class="eye" cx="84" cy="74" rx="8" ry="10" fill="#22e4ff"/><ellipse class="eye" cx="116" cy="74" rx="8" ry="10" fill="#22e4ff"/>
+<circle cx="87" cy="70" r="2.5" fill="#fff"/><circle cx="119" cy="70" r="2.5" fill="#fff"/>
+<path d="M90 90Q100 98 110 90" fill="none" stroke="#22e4ff" stroke-width="3" stroke-linecap="round"/>
+<circle cx="72" cy="90" r="5" fill="#ff7ab8" opacity=".55"/><circle cx="128" cy="90" r="5" fill="#ff7ab8" opacity=".55"/>
+</g>
+<path class="tw" d="M30 60l3 8 8 3-8 3-3 8-3-8-8-3 8-3z" fill="#00c2ff"/><path class="tw t2" d="M170 150l2.5 6 6 2.5-6 2.5-2.5 6-2.5-6-6-2.5 6-2.5z" fill="#2563ff"/>
+</svg>
+<div><small>Download</small><b id="sp">0</b><small>Mbps</small></div>
+<span class="chip c1"><svg class="i"><use href="#bolt"/></svg><span data-t="chip1"></span></span>
+<span class="chip c2"><svg class="i"><use href="#shield"/></svg><span data-t="chip2"></span></span>
+</div>
+</div></div>
+
+<section id="planos" style="padding-top:0"><div class="wrap">
+<div class="finder">
+<div><label data-t="finderRegion">Sua região</label><div class="dd" id="dd"><button type="button" class="field dt" id="dt" aria-haspopup="listbox" aria-expanded="false"><svg class="i"><use href="#pin"/></svg><span id="dv"></span><svg class="i ch"><use href="#chev"/></svg></button><ul class="dl" id="dl" role="listbox"></ul></div></div>
+<div><label data-t="finderSearch">Buscar plano</label><div class="field"><svg class="i"><use href="#search"/></svg><input id="q" data-tp="finderPlaceholder" placeholder=""></div></div>
+<button class="btn" id="go"><svg class="i"><use href="#globe"/></svg><span data-t="btnConsult"></span></button>
+</div>
+<div class="res" id="res"></div>
+<div class="filters" id="fl"></div>
+<div class="grid" id="gd"></div>
+</div></section>
+
+<section id="vantagens" class="wt"><div class="wrap">
+<div class="hd"><h2 data-t="vantTitle"></h2><p data-t="vantText"></p></div>
+<div class="feat" id="feat"></div>
+</div></section>
+
+<section id="servicos"><div class="wrap"><div class="hd"><h2 data-t="servTitle"></h2><p data-t="servText"></p></div></div>
+<div class="mq"><div class="tr rv2" id="sv"></div></div>
+<div class="wrap"><div class="sbt"><a class="btn o" href="#planos" data-t="servBtn1"></a><button class="btn" data-call data-t="servBtn2"></button></div></div></section>
+
+<section id="avaliacoes"><div class="wrap">
+<div class="hd"><h2 data-t="revTitle"></h2><p data-t="revText"></p></div>
+</div>
+<div class="mq"><div class="tr" id="tr"></div></div>
+</section>
+
+<section id="duvidas"><div class="wrap">
+<div class="hd"><h2 data-t="faqTitle"></h2><p data-t="faqText"></p></div>
+<div class="faq" id="faq"></div>
+</div></section>
+
+<section style="padding-top:0"><div class="wrap"><div class="cb"><h2 data-t="ctaTitle"></h2><p data-t="ctaText"></p><a class="btn" href="#planos" data-t="ctaBtn1"></a> <button class="btn" data-call style="background:transparent;color:#fff;border:1px solid rgba(255,255,255,.6);box-shadow:none;margin:6px"><svg class="i"><use href="#call"/></svg><span data-t="ctaBtn2"></span></button></div></div></section>
+
+<div class="md" id="md" role="dialog" aria-modal="true" aria-labelledby="mt"><div class="mc">
+<button class="x" id="mx" aria-label="Fechar">×</button>
+<div id="mf"><div class="mi"><svg class="i"><use href="#call"/></svg></div>
+<h3 id="mt" data-t="callTitle"></h3><p class="sb" data-t="callText"></p>
+<form id="cf" novalidate>
+<label for="cn" data-t="callNameLabel"></label><div class="field"><svg class="i"><use href="#user"/></svg><input id="cn" data-tp="callNamePh" placeholder="" autocomplete="name" maxlength="80"></div><small class="er" id="en"></small>
+<label for="cp" data-t="callPhoneLabel"></label><div class="field"><svg class="i"><use href="#call"/></svg><input id="cp" type="tel" inputmode="tel" placeholder="(11) 93466-4498" autocomplete="tel" maxlength="15"></div><small class="er" id="ep"></small>
+<button class="btn" type="submit" id="cs" data-t="callBtn"></button>
+<div class="fe" id="fe"></div>
+<div class="nt"><svg class="i"><use href="#shield"/></svg><span data-t="callNote"></span></div>
+</form></div>
+<div id="ok" style="display:none"><div class="ck"><svg class="i" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></div><h3 id="okt"></h3><p class="sb" data-t="callOkText"></p><button class="btn" type="button" id="mo">OK</button></div>
+</div></div>
+<div class="md" id="pm" role="dialog" aria-modal="true" aria-labelledby="pt"><div class="mc pc">
+<button class="x" id="px" aria-label="Fechar">×</button>
+<div class="pb" id="pb"></div>
+<div class="apn" id="apn"></div>
+</div></div>
+<a class="wa" id="wa" href="#" target="_blank" rel="noopener" aria-label="WhatsApp"><b id="wat">Fale conosco</b><span><svg viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg></span></a>
+<footer class="wt"><div class="wrap"><img src="assets/icone.png" alt="" width="34" height="34" style="display:block;margin:0 auto 10px;opacity:.85"><span data-t="footer"></span></div></footer>
+
+<script src="firebase-config.js"></script>
+<script src="defaults.js"></script>
+<script src="site.js"></script>
+</body>
+</html>
