@@ -111,7 +111,6 @@
     { g: "Detalhes do plano (janela)", k: "appIncluded", l: "Título 'o que está incluso'" },
     { g: "Detalhes do plano (janela)", k: "appActivateTitle", l: "Título 'como ativar'" },
     { g: "Detalhes do plano (janela)", k: "appActivateText", l: "Texto 'como ativar'", long: true },
-    { g: "Rodapé", k: "footer", l: "Texto do rodapé", long: true }
   ];
 
   var TEXTS = {
@@ -139,8 +138,7 @@
     subscribeBtn: "Assinar", installBadge: "Instalação grátis",
     appsTitle: "Aplicativos inclusos", appsHint: "Toque em um app para ver os detalhes.",
     appBack: "Voltar aos detalhes", appIncluded: "O que está incluso", appActivateTitle: "Como ativar",
-    appActivateText: "Depois de assinar, você recebe o link de ativação por SMS e e-mail em até 24 horas.",
-    footer: "© 2026 Alares · Representante autorizado."
+    appActivateText: "Depois de assinar, você recebe o link de ativação por SMS e e-mail em até 24 horas."
   };
 
   /* ---------- planos ---------- */
@@ -234,8 +232,7 @@
   var whatsapp = {
     number: "5515999999999",
     tooltip: "Fale conosco",
-    floatMsg: "Olá! Quero conhecer os planos da Alares",
-    planMsg: "Olá! Quero contratar o plano {plano} de {velocidade} por R$ {preco}/mês. Minha região: {regiao}."
+    floatMsg: "Olá! Quero conhecer os planos da Alares"
   };
 
   var DEFAULTS = {
@@ -267,8 +264,29 @@
     return out;
   }
 
+
+  /* ---------- mensagem automática do WhatsApp (monta sozinha pelo plano) ---------- */
+  function planMessage(c, p, regionName) {
+    var spd = function (m) { return m >= 1000 ? String(m / 1000).replace(".", ",") + " Giga" : m + " Mega"; };
+    var money = function (v) { return Number(v || 0).toFixed(2).replace(".", ","); };
+    var apps = (p.apps || []).map(function (id) { return (c.apps || []).filter(function (a) { return a.id === id; })[0]; }).filter(Boolean);
+    var streams = apps.filter(function (a) { return a.kind === "Streaming"; }).map(function (a) { return a.name; });
+    var others = apps.filter(function (a) { return a.kind !== "Streaming"; }).map(function (a) { return a.name; });
+    var ch = +p.choose || 0;
+    var L = ["Olá! Quero contratar o plano *" + p.name + "* da Alares.", ""];
+    L.push("📶 Velocidade: " + spd(p.mega) + (p.up ? " (upload " + spd(p.up) + ")" : ""));
+    L.push("💰 Valor: R$ " + money(p.price) + "/mês");
+    if (regionName) L.push("📍 Região: " + regionName);
+    var feats = (p.features || []).filter(function (f) { return String(f).trim(); });
+    if (feats.length) L.push("✅ Inclui: " + feats.join(", "));
+    if (streams.length) L.push("🎬 Streamings: " + streams.join(", ") + (ch ? " (" + ch + " à escolha)" : ""));
+    if (others.length) L.push("🎁 Benefícios: " + others.join(", "));
+    L.push("", "Pode me ajudar a finalizar a assinatura?");
+    return L.join("\n");
+  }
+
   window.AL = {
-    DEFAULTS: DEFAULTS, withDefaults: withDefaults, clone: clone,
+    DEFAULTS: DEFAULTS, withDefaults: withDefaults, planMessage: planMessage, clone: clone,
     ART: ART, autoArt: autoArt, ICONS: ICONS, TEXT_FIELDS: TEXT_FIELDS, makeBenefits: makeBenefits
   };
 })();

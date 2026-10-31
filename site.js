@@ -40,8 +40,7 @@
   }
   function planMsg(p) {
     var r = regionObj();
-    var vals = { plano: p.name, velocidade: speedLabel(p), preco: fm(p.price), regiao: r ? r.name : "" };
-    return String(S.c.whatsapp.planMsg || "").replace(/\{(plano|velocidade|preco|regiao)\}/g, function (m, k) { return vals[k]; });
+    return AL.planMessage(S.c, p, r ? r.name : "");
   }
   function openWA(msg) { window.open(waUrl(msg), "_blank", "noopener"); }
 

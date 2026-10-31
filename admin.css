@@ -158,3 +158,4 @@ main .sub{color:var(--mut);margin-bottom:20px;max-width:720px}
 .brandbox{display:grid;gap:10px;align-content:start}
 .brandprev{height:110px;border:1px dashed var(--ln);border-radius:14px;background:#f4f5f8 center/contain no-repeat;background-origin:content-box;padding:14px}
 .brandprev.sq{width:110px}
+.wapre{white-space:pre-wrap;font:inherit;background:#e7fbe9;border:1px solid #b7e8bd;border-radius:14px;padding:14px 16px;color:#0b3d17;line-height:1.55}

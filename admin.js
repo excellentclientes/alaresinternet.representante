@@ -468,28 +468,25 @@
   }
 
   function vWhats() {
-    var w = draft.whatsapp, prev = h("div", { class: "hint", style: "margin-top:6px" });
+    var w = draft.whatsapp, prev = h("pre", { class: "wapre" });
     function sample() {
-      var p = draft.plans[0] || { name: "Plano", mega: 500, price: 99.9 }, r = draft.regions[0] ? draft.regions[0].name : "Sua cidade";
-      var v = { plano: p.name, velocidade: p.mega >= 1000 ? (p.mega / 1000) + " Giga" : p.mega + " Mega", preco: fm(p.price), regiao: r };
-      prev.textContent = "Exemplo: " + String(w.planMsg || "").replace(/\{(plano|velocidade|preco|regiao)\}/g, function (m, k) { return v[k]; });
+      var p = draft.plans[0], r = draft.regions[0];
+      prev.textContent = p ? AL.planMessage(draft, p, r ? r.name : "") : "Cadastre um plano para ver a prévia.";
     }
     sample();
     var num = fNum(w, "number", "Número do WhatsApp", { hint: "só números: 55 + DDD + número. Ex.: 5515999999999", min: 0 });
     var numIn = num.querySelector("input"); numIn.type = "text"; numIn.inputMode = "numeric"; numIn.value = w.number || "";
     numIn.oninput = function () { w.number = digits(numIn.value); changed(); };
-    var plan = fText(w, "planMsg", "Mensagem quando o cliente escolhe um plano", { area: true, rows: 3, hint: "use {plano} {velocidade} {preco} {regiao}" });
-    plan.querySelector("textarea").addEventListener("input", sample);
     return head("WhatsApp", "O número vale para o botão flutuante e para todos os botões \"Contratar\" e \"Assinar\".").concat([
       h("div", { class: "box" }, h("div", { class: "grid2" }, num, fText(w, "tooltip", "Texto do balão do botão verde")),
         fText(w, "floatMsg", "Mensagem do botão verde flutuante", { area: true, rows: 2, cls: "span2" })),
-      h("div", { class: "box" }, plan, prev,
+      h("div", { class: "box" }, h("h3", null, "Mensagem ao clicar em Contratar / Assinar"),
+        h("p", { class: "muted", style: "margin-bottom:10px" }, "Montada sozinha com os dados do plano escolhido (velocidade, preço, região, itens e aplicativos). Prévia com o primeiro plano:"),
+        prev,
         h("div", { class: "bar", style: "margin-top:12px" }, h("button", { class: "btn sm", type: "button", onclick: function () {
           var n = digits(w.number); if (n.length < 10) return toast("Digite o número primeiro.", "bad");
-          var p = draft.plans[0]; var m = String(w.planMsg || "").replace(/\{(plano|velocidade|preco|regiao)\}/g, function (x, k) {
-            return { plano: p ? p.name : "", velocidade: p ? p.mega + " Mega" : "", preco: p ? fm(p.price) : "", regiao: draft.regions[0] ? draft.regions[0].name : "" }[k];
-          });
-          window.open("https://wa.me/" + n + "?text=" + encodeURIComponent(m), "_blank", "noopener");
+          var p = draft.plans[0]; if (!p) return;
+          window.open("https://wa.me/" + n + "?text=" + encodeURIComponent(AL.planMessage(draft, p, draft.regions[0] ? draft.regions[0].name : "")), "_blank", "noopener");
         } }, "Testar no WhatsApp"))),
       h("div", { class: "box" }, h("h3", null, "Zona de perigo"),
         h("p", { class: "muted", style: "margin-bottom:10px" }, "Volta todo o conteúdo para o modelo inicial do site. Só vale depois de você clicar em Publicar."),
