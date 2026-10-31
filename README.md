@@ -12,25 +12,38 @@ Site de internet com painel para editar **tudo** em tempo real, usando Firebase 
 | `site.js` | Lê tudo do Firebase em tempo real, WhatsApp, pedido de ligação |
 | `defaults.js` | Conteúdo inicial (usado até você publicar pelo painel) |
 | `firebase-config.js` | **Código do Firebase** (chaves do projeto) |
-| `admin.html` / `admin.css` / `admin.js` | Painel administrativo (`/admin.html`) |
+| `painel.html` / `admin.css` / `admin.js` | Painel administrativo (`/painel`) |
 | `firestore.rules` | Regras de segurança do banco |
+| `vercel.json` | Rotas da Vercel (`/` e `/painel`) |
 | `assets/` | Logo e ícone |
 
-## Configuração (uma vez só, 5 minutos)
+## Endereços (Vercel)
+
+Só existem dois endereços:
+
+- Site: `https://alaresinternetrepresentante.vercel.app`
+- Painel: `https://alaresinternetrepresentante.vercel.app/painel`
+
+O arquivo `vercel.json` cuida disso (`/painel.html`, `/admin` e `/index` redirecionam). Para publicar:
+suba tudo no GitHub e, na Vercel, importe o repositório (*Framework Preset: Other*, sem build).
+
+## Configuração do Firebase (uma vez só)
 
 Tudo no [Console do Firebase](https://console.firebase.google.com) > projeto **alares-internet**.
 
 1. **Firestore Database**: *Criar banco de dados* > modo produção > região `southamerica-east1` (São Paulo).
-2. **Authentication** > *Começar* > *Método de login* > ative **E-mail/senha**.
-   Depois, na aba **Users** > *Adicionar usuário*: crie o e-mail e a senha que você vai usar no painel.
-3. **Regras**: abra `firestore.rules`, troque `SEU_EMAIL_AQUI` pelo e-mail do passo 2 e cole em
-   *Firestore Database > Regras > Publicar*.
-   > Sem essa regra o banco fica aberto ou bloqueado, então não pule este passo.
-4. **Domínio do site**: em *Authentication > Settings > Domínios autorizados*, adicione o endereço onde o
-   site vai ficar (ex.: `seuusuario.github.io`). `localhost` já vem liberado.
-5. Suba os arquivos no GitHub e ative o **GitHub Pages** (*Settings > Pages > Deploy from a branch > main / root*).
+2. **Authentication** > *Método de login* > ative **Google** (escolha um e-mail de suporte do projeto).
+3. **Authentication** > *Configurações* > *Domínios autorizados* > adicione
+   `alaresinternetrepresentante.vercel.app`.
+4. **Regras**: copie o conteúdo de `firestore.rules` em *Firestore Database > Regras > Publicar*.
+   Elas só deixam a conta `excellentservices.excel@gmail.com` alterar o site e ler os pedidos de ligação.
+   > Este passo é o que realmente protege os dados. Sem ele o painel não consegue gravar.
 
-O painel fica em `https://SEU-ENDERECO/admin.html`.
+## Segurança do painel
+
+- O login é feito **somente com Google**. Qualquer outra conta é desconectada na hora, com aviso.
+- A trava de verdade está nas regras do Firestore (passo 4): mesmo que alguém burle a tela, o banco recusa.
+- Visitantes só conseguem **ler** o conteúdo do site e **criar** um pedido de ligação (com dados validados).
 
 ## Como usar o painel
 
@@ -55,5 +68,6 @@ O painel fica em `https://SEU-ENDERECO/admin.html`.
   clique em **Publicar** para gravar no Firebase.
 - Imagens enviadas do computador são reduzidas e guardadas no Firestore (não precisa do Firebase Storage).
 - A `apiKey` do Firebase pode ficar pública. Quem protege os dados são as **regras do Firestore** (passo 3).
-- O login não funciona abrindo o arquivo direto (`file://`). Para testar local:
-  `python3 -m http.server 8000` e abra `http://localhost:8000/admin.html`.
+- O login com Google não funciona abrindo o arquivo direto (`file://`). Use o endereço da Vercel.
+- Se você já publicou conteúdo pelo painel antes, textos como o rodapé ficam salvos no Firebase: ajuste em
+  *Textos e números > Rodapé* e clique em Publicar.

@@ -2,16 +2,17 @@ rules_version = '2';
 
 // ============================================================
 //  REGRAS DO FIRESTORE – projeto alares-internet
-//  1) Troque SEU_EMAIL_AQUI pelo e-mail que você criou em
-//     Authentication > Users (o e-mail do painel).
-//  2) Cole tudo em Firestore Database > Regras > Publicar.
+//  Só a conta Google excellentservices.excel@gmail.com
+//  consegue alterar o site e ler os pedidos de ligação.
+//  Cole tudo em Firestore Database > Regras > Publicar.
 // ============================================================
 service cloud.firestore {
   match /databases/{database}/documents {
 
     function isAdmin() {
       return request.auth != null
-          && request.auth.token.email == 'SEU_EMAIL_AQUI';
+          && request.auth.token.email == 'excellentservices.excel@gmail.com'
+          && request.auth.token.email_verified == true;
     }
 
     // Conteúdo do site: qualquer visitante lê, só o admin altera

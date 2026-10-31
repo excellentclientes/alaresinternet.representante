@@ -140,7 +140,7 @@
     appsTitle: "Aplicativos inclusos", appsHint: "Toque em um app para ver os detalhes.",
     appBack: "Voltar aos detalhes", appIncluded: "O que está incluso", appActivateTitle: "Como ativar",
     appActivateText: "Depois de assinar, você recebe o link de ativação por SMS e e-mail em até 24 horas.",
-    footer: "© 2026 Alares · Todas as informações deste site são fictícias."
+    footer: "© 2026 Alares · Representante autorizado."
   };
 
   /* ---------- planos ---------- */

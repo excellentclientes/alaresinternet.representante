@@ -611,29 +611,26 @@
     draft = JSON.parse(pubStr); dirty = false; updState(); view(); schedulePreview();
   }
 
-  /* ---------- login ---------- */
+  /* ---------- login (Google) ---------- */
+  var ALLOWED = "excellentservices.excel@gmail.com";
+  var denied = false;
   function showLogin(msg) { $("#app").hidden = true; $("#login").hidden = false; if (msg) $("#lerr").textContent = msg; }
   function authErr(e) {
     var c = (e && e.code) || "";
-    if (/invalid-credential|wrong-password|user-not-found|invalid-email/.test(c)) return "E-mail ou senha incorretos.";
-    if (/too-many/.test(c)) return "Muitas tentativas. Aguarde alguns minutos e tente de novo.";
+    if (/popup-closed|cancelled-popup/.test(c)) return "";
+    if (/popup-blocked/.test(c)) return "O navegador bloqueou a janela do Google. Libere pop-ups para este site e tente de novo.";
+    if (/unauthorized-domain/.test(c)) return "Este endereço ainda não está autorizado no Firebase (Authentication > Configurações > Domínios autorizados).";
+    if (/operation-not-allowed/.test(c)) return "O login com Google não está ativado no Firebase (Authentication > Método de login).";
     if (/network/.test(c)) return "Sem conexão. Verifique a internet.";
-    if (/not-supported/.test(c)) return "O login não funciona abrindo o arquivo direto. Use o endereço publicado (https) ou um servidor local.";
+    if (/operation-not-supported/.test(c)) return "O login não funciona abrindo o arquivo direto. Use o endereço publicado.";
     return "Não foi possível entrar (" + (c || "erro") + ").";
   }
-  $("#lf").onsubmit = function (e) {
-    e.preventDefault();
-    var em = $("#le").value.trim(), pw = $("#lp").value;
-    if (!em || !pw) { $("#lerr").textContent = "Preencha e-mail e senha."; return; }
-    $("#lerr").textContent = ""; $("#lbtn").disabled = true;
-    A.signInWithEmailAndPassword(auth, em, pw).catch(function (er) { $("#lerr").textContent = authErr(er); })
-      .then(function () { $("#lbtn").disabled = false; });
-  };
-  $("#lreset").onclick = function () {
-    var em = $("#le").value.trim();
-    if (!em) { $("#lerr").textContent = "Digite seu e-mail acima e clique de novo."; return; }
-    A.sendPasswordResetEmail(auth, em).then(function () { $("#lerr").style.color = "#16a34a"; $("#lerr").textContent = "Enviamos um e-mail para redefinir a senha."; })
-      .catch(function (er) { $("#lerr").style.color = ""; $("#lerr").textContent = authErr(er); });
+  $("#lgoogle").onclick = function () {
+    var btn = $("#lgoogle"); $("#lerr").textContent = ""; denied = false;
+    btn.disabled = true; $("#lgtxt").textContent = "Abrindo o Google…";
+    var provider = new A.GoogleAuthProvider(); provider.setCustomParameters({ prompt: "select_account" });
+    A.signInWithPopup(auth, provider).catch(function (er) { $("#lerr").textContent = authErr(er); })
+      .then(function () { btn.disabled = false; $("#lgtxt").textContent = "Entrar com Google"; });
   };
   $("#bout").onclick = function () { if (dirty && published && !confirm("Há alterações não publicadas. Sair mesmo assim?")) return; A.signOut(auth); };
   $("#bpub").onclick = publish;
@@ -673,13 +670,18 @@
     }).catch(function (e) { toast(errMsg(e), "bad"); });
   }
 
-  if (location.protocol === "file:") {
-    $("#lerr").textContent = "Atenção: abrindo o arquivo direto, o login do Firebase não funciona. Use o endereço do GitHub Pages ou um servidor local (veja o README).";
-  }
   var F = window.alaresFirebase;
   Promise.all([F.firestore(), F.auth()]).then(function (r) {
     db = r[0].db; fs = r[0].fs; auth = r[1].auth; A = r[1].a;
-    A.onAuthStateChanged(auth, function (user) { if (user) enter(); else showLogin(); });
+    A.onAuthStateChanged(auth, function (user) {
+      if (!user) { showLogin(denied ? $("#lerr").textContent : ""); return; }
+      if (String(user.email || "").toLowerCase() !== ALLOWED || user.emailVerified === false) {
+        denied = true;
+        showLogin("A conta " + (user.email || "") + " não tem permissão para acessar este painel.");
+        A.signOut(auth); return;
+      }
+      denied = false; enter();
+    });
   }).catch(function (e) {
     console.error(e);
     $("#lerr").textContent = "Não foi possível carregar o Firebase. Verifique a internet e tente de novo.";

@@ -22,10 +22,31 @@ button,input,select,textarea{font:inherit;color:inherit}
 .ib[disabled]{opacity:.35;cursor:default}
 
 /* login */
-.login{min-height:100%;display:grid;place-items:center;padding:20px;background:radial-gradient(700px 400px at 20% 0%,rgba(37,99,255,.14),transparent),radial-gradient(600px 400px at 100% 100%,rgba(0,194,255,.12),transparent),var(--bg)}
-.lbox{width:100%;max-width:400px;background:var(--card);border:1px solid var(--ln);border-radius:24px;padding:34px 30px;box-shadow:0 30px 80px var(--glow);display:grid;gap:14px}
-.llogo{height:54px;width:auto;justify-self:start}
-.lbox h1{font-size:1.35rem}
+.login{position:relative;min-height:100vh;display:grid;place-items:center;padding:24px;overflow:hidden;background:#060913;color:#fff}
+.lbg{position:absolute;inset:0;overflow:hidden}
+.lbg i{position:absolute;border-radius:50%;filter:blur(90px);opacity:.55;animation:fl 14s ease-in-out infinite}
+.lbg .o1{width:560px;height:560px;background:#2563ff;left:-160px;top:-160px}
+.lbg .o2{width:480px;height:480px;background:#7c3aed;right:-140px;bottom:-120px;animation-delay:-5s}
+.lbg .o3{width:360px;height:360px;background:#00c2ff;left:55%;top:8%;opacity:.28;animation-delay:-9s}
+.lbg .grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);background-size:56px 56px;-webkit-mask-image:radial-gradient(ellipse at center,#000 30%,transparent 75%);mask-image:radial-gradient(ellipse at center,#000 30%,transparent 75%)}
+@keyframes fl{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(40px,30px) scale(1.12)}}
+.lbox{position:relative;width:100%;max-width:430px;text-align:center;padding:42px 36px 30px;border-radius:28px;background:linear-gradient(160deg,rgba(255,255,255,.12),rgba(255,255,255,.04));border:1px solid rgba(255,255,255,.18);-webkit-backdrop-filter:blur(22px) saturate(140%);backdrop-filter:blur(22px) saturate(140%);box-shadow:0 40px 100px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.22);animation:up .7s cubic-bezier(.2,.8,.2,1) both}
+@keyframes up{from{opacity:0;transform:translateY(24px) scale(.98)}to{opacity:1;transform:none}}
+.lbox::before{content:"";position:absolute;left:12%;right:12%;top:0;height:1px;background:linear-gradient(90deg,transparent,#00c2ff,transparent)}
+.lbadge{display:inline-flex;align-items:center;gap:7px;padding:6px 13px;border-radius:99px;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9fd8ff;background:rgba(0,194,255,.12);border:1px solid rgba(0,194,255,.3)}
+.llogo{display:block;height:62px;width:auto;margin:22px auto 6px}
+.lbox h1{font-size:1.5rem;font-weight:800;letter-spacing:-.01em;margin-top:6px}
+.lsub{color:rgba(255,255,255,.65);font-size:.88rem;line-height:1.55;margin:10px auto 26px;max-width:320px}
+.gbtn{width:100%;display:flex;align-items:center;justify-content:center;gap:12px;padding:15px 20px;border:0;border-radius:15px;background:#fff;color:#1f2430;font-weight:700;font-size:.98rem;cursor:pointer;box-shadow:0 12px 34px rgba(37,99,255,.35);transition:.2s}
+.gbtn:hover{transform:translateY(-2px);box-shadow:0 18px 44px rgba(37,99,255,.5)}
+.gbtn:active{transform:none}
+.gbtn[disabled]{opacity:.7;cursor:wait;transform:none}
+.lerr{min-height:1.3em;margin-top:16px;font-size:.82rem;line-height:1.45;color:#ff8a8a}
+.lerr:not(:empty){padding:10px 12px;border-radius:12px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3)}
+.lfoot{display:flex;align-items:center;justify-content:center;gap:7px;margin-top:20px;font-size:.76rem;color:rgba(255,255,255,.5)}
+.lback{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.55);font-size:.82rem;text-decoration:none;font-weight:600;transition:.15s}
+.lback:hover{color:#fff}
+@media(max-width:480px){.lbox{padding:34px 22px 24px}}
 label{display:grid;gap:6px;font-size:.78rem;font-weight:600;color:var(--mut)}
 input,select,textarea{width:100%;padding:10px 12px;border:1px solid var(--ln);border-radius:10px;background:#fff;outline:0;transition:.15s;font-size:.9rem}
 input:focus,select:focus,textarea:focus{border-color:var(--a);box-shadow:0 0 0 4px var(--glow)}

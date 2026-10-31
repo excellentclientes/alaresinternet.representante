@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Painel Alares</title>
+<link rel="icon" type="image/png" href="/assets/icone.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/admin.css">
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login" class="login">
+  <div class="lbg" aria-hidden="true"><i class="o1"></i><i class="o2"></i><i class="o3"></i><div class="grid"></div></div>
+  <section class="lbox">
+    <div class="lbadge"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10.5" width="16" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg> Área restrita</div>
+    <img src="/assets/logo-branca.png" alt="Alares" class="llogo">
+    <h1>Painel administrativo</h1>
+    <p class="lsub">Gerencie planos, regiões, textos e acompanhe os pedidos de ligação em tempo real.</p>
+    <button class="gbtn" id="lgoogle" type="button">
+      <svg viewBox="0 0 48 48" width="22" height="22" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.4c-.5 2.9-2.2 5.3-4.6 6.9l7.4 5.7c4.3-4 6.9-9.9 6.9-17.1z"/><path fill="#FBBC05" d="M10.5 28.7a14.5 14.5 0 0 1 0-9.4l-7.9-6.1a24 24 0 0 0 0 21.6l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.4-5.7c-2.1 1.4-4.8 2.3-8.5 2.3-6.3 0-11.6-4.1-13.5-9.8l-7.9 6.1C6.5 42.6 14.6 48 24 48z"/></svg>
+      <span id="lgtxt">Entrar com Google</span>
+    </button>
+    <div id="lerr" class="lerr" role="alert"></div>
+    <p class="lfoot"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 4.5 3.3 8.4 8 9 4.7-.6 8-4.5 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg> Acesso permitido somente à conta autorizada.</p>
+  </section>
+  <a class="lback" href="/">← Voltar ao site</a>
+</div>
+
+<!-- PAINEL -->
+<div id="app" hidden>
+  <header class="top">
+    <img src="/assets/logo.png" alt="Alares" class="tlogo">
+    <span class="pill" id="state">Carregando…</span>
+    <div class="grow"></div>
+    <button class="btn ghost" id="bpv" title="Mostrar ou esconder a pré-visualização">Pré-visualização</button>
+    <a class="btn ghost" href="/" target="_blank" rel="noopener">Abrir site</a>
+    <button class="btn ghost" id="bdisc" title="Descartar o que ainda não foi publicado" hidden>Descartar</button>
+    <button class="btn pri" id="bpub">Publicar</button>
+    <button class="btn ghost" id="bout">Sair</button>
+  </header>
+  <div class="shell">
+    <nav class="side" id="tabs"></nav>
+    <main id="main"></main>
+    <aside class="pv" id="pv">
+      <div class="pvbar">
+        <div class="seg" id="pvmode">
+          <button data-m="d" class="on">Computador</button>
+          <button data-m="m">Celular</button>
+        </div>
+        <button class="btn ghost sm" id="pvclose">Fechar</button>
+      </div>
+      <div class="pvbox" id="pvbox"><div class="pvwrap" id="pvwrap"><iframe id="pvf" title="Pré-visualização do site" src="/?preview=1"></iframe></div></div>
+      <p class="pvhint">Mostra o que você está editando <b>antes</b> de publicar.</p>
+    </aside>
+  </div>
+</div>
+
+<div id="toast" class="toast" role="status"></div>
+
+<script src="/firebase-config.js"></script>
+<script src="/defaults.js"></script>
+<script src="/admin.js"></script>
+</body>
+</html>
