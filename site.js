@@ -67,9 +67,10 @@
     var b = (S.c && S.c.brand) || {};
     var logo = /^data:image\//.test(b.logo || "") ? b.logo : "assets/logo.png";
     var icon = /^data:image\//.test(b.icon || "") ? b.icon : "assets/icone.png";
-    document.querySelectorAll(".logo img").forEach(function (i) { if (i.getAttribute("src") !== logo) i.src = logo; });
+    var customLogo = /^data:image\//.test(b.logo || ""), customIcon = /^data:image\//.test(b.icon || "");
+    document.querySelectorAll(".logo img").forEach(function (i) { if (i.getAttribute("src") !== logo) i.src = logo; i.style.filter = customLogo ? "none" : ""; });
     document.querySelectorAll(".mas image").forEach(function (i) { i.setAttribute("href", logo); });
-    document.querySelectorAll("footer img").forEach(function (i) { if (i.getAttribute("src") !== icon) i.src = icon; });
+    document.querySelectorAll("footer img").forEach(function (i) { if (i.getAttribute("src") !== icon) i.src = icon; i.style.filter = customIcon ? "none" : ""; });
     var fv = document.querySelector('link[rel="icon"]');
     if (fv && fv.getAttribute("href") !== icon) fv.setAttribute("href", icon);
   }
@@ -365,11 +366,11 @@
             if (d > RAD) continue;
             var k = 1 - d / RAD, u = k * k * 14, px = gx + (d ? dx / d * u : 0), py = gy + (d ? dy / d * u : 0);
             P.push([px, py]);
-            cx.beginPath(); cx.arc(px, py, 1 + k * 1.6, 0, 7); cx.fillStyle = "rgba(37,99,255," + (k * M.a * .9) + ")"; cx.fill();
+            cx.beginPath(); cx.arc(px, py, 1 + k * 1.6, 0, 7); cx.fillStyle = "rgba(255,255,255," + (k * M.a * .9) + ")"; cx.fill();
           }
         P.forEach(function (p) {
           var d = Math.hypot(p[0] - M.x, p[1] - M.y);
-          if (d < RAD * .45) { cx.strokeStyle = "rgba(37,99,255," + ((1 - d / (RAD * .45)) * M.a * .5) + ")"; cx.beginPath(); cx.moveTo(p[0], p[1]); cx.lineTo(M.x, M.y); cx.stroke(); }
+          if (d < RAD * .45) { cx.strokeStyle = "rgba(255,255,255," + ((1 - d / (RAD * .45)) * M.a * .5) + ")"; cx.beginPath(); cx.moveTo(p[0], p[1]); cx.lineTo(M.x, M.y); cx.stroke(); }
         });
       }
       requestAnimationFrame(an);

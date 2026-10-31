@@ -210,3 +210,40 @@ footer{border-top:1px solid var(--ln);padding:30px 0;color:var(--mut);font-size:
 .fe a{color:var(--a);font-weight:600}
 .btn[disabled]{opacity:.6;cursor:wait;transform:none}
 
+
+/* ================= TEMA AZUL ================= */
+:root{--bg:#1236d6;--tx:#fff;--mut:rgba(255,255,255,.8);--ln:rgba(255,255,255,.24);--glow:rgba(0,194,255,.28)}
+html{background:#0a1f94}
+body{background-color:#0f2fc7;background-image:radial-gradient(900px 520px at 12% -4%,rgba(0,194,255,.42),transparent 70%),radial-gradient(820px 640px at 100% 26%,rgba(124,58,237,.38),transparent 70%),linear-gradient(180deg,#1b4bff 0%,#1136d4 38%,#0b24a8 72%,#081a7c 100%);background-repeat:no-repeat}
+header{background:color-mix(in srgb,#1236d6 78%,transparent);border-bottom-color:rgba(255,255,255,.16)}
+.logo img{filter:brightness(0) invert(1)}
+nav a:hover{color:#fff}
+.wt{background:rgba(4,14,90,.38)}
+footer{border-top:1px solid rgba(255,255,255,.16)}
+footer img{filter:brightness(0) invert(1)}
+.g{background:linear-gradient(90deg,#8fe6ff,#fff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.btn{background:#fff;color:#0f2fc7;box-shadow:0 12px 30px rgba(3,10,70,.35)}
+.btn:hover{box-shadow:0 18px 40px rgba(3,10,70,.5)}
+.btn.o{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.55);box-shadow:none}
+.btn.o:hover{background:rgba(255,255,255,.12)}
+.hero p.l{color:rgba(255,255,255,.86)}
+.ring .bg{stroke:rgba(255,255,255,.22)}
+.ring .fg{stroke:#8fe6ff;filter:drop-shadow(0 0 8px rgba(143,230,255,.75))}
+.gauge b{text-shadow:0 0 18px rgba(8,26,120,.7)}
+.filters button{background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.3)}
+.filters button.on,.filters button:hover{background:#fff;color:#0f2fc7;border-color:#fff}
+/* itens claros (cartões, busca, modais) voltam às cores escuras */
+.card,.f,.rv,.finder,.q,.mc,.chip,.tag{--tx:#0b0d14;--mut:#5a6275;--ln:#e3e3dc;--bg:#f7f6f2;--glow:rgba(37,99,255,.18);color:var(--tx)}
+.finder{box-shadow:0 24px 70px rgba(3,10,70,.45)}
+.card,.f,.rv,.q{box-shadow:0 10px 34px rgba(3,10,70,.28)}
+.card:hover{box-shadow:0 26px 60px rgba(3,10,70,.5)}
+.f:hover{border-color:#00c2ff}
+.card .btn,.finder .btn,.mc .btn,.pr2 .btn{background:linear-gradient(135deg,var(--a),var(--c));color:#fff;box-shadow:0 10px 30px var(--glow)}
+.card .btn.o,.mc .btn.o{background:transparent;color:var(--tx);border:1px solid var(--ln);box-shadow:none}
+.card .btn.o:hover,.mc .btn.o:hover{background:rgba(37,99,255,.06)}
+.card .btn:hover,.finder .btn:hover,.mc .btn:hover{box-shadow:0 16px 40px var(--glow)}
+.cb{background:linear-gradient(135deg,#27c4ff 0%,#4f6bff 48%,#8f4dff 100%);border:1px solid rgba(255,255,255,.4);box-shadow:0 30px 80px rgba(3,10,70,.5)}
+.cb .btn{background:#fff;color:#0f2fc7}
+.cb .btn[style]{background:transparent!important;color:#fff!important;border:1px solid rgba(255,255,255,.7)!important}
+.sv{box-shadow:0 18px 46px rgba(3,10,70,.45)}
+.gauge svg.ring{overflow:visible}
