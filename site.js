@@ -57,10 +57,22 @@
     renderServices();
     renderReviews();
     renderFaq();
+    applyBrand();
     var wa = $("#wa");
     wa.href = waUrl(S.c.whatsapp.floatMsg);
     $("#wat").textContent = S.c.whatsapp.tooltip || "";
     S.first = false;
+  }
+
+  function applyBrand() {
+    var b = (S.c && S.c.brand) || {};
+    var logo = /^data:image\//.test(b.logo || "") ? b.logo : "assets/logo.png";
+    var icon = /^data:image\//.test(b.icon || "") ? b.icon : "assets/icone.png";
+    document.querySelectorAll(".logo img").forEach(function (i) { if (i.getAttribute("src") !== logo) i.src = logo; });
+    document.querySelectorAll(".mas image").forEach(function (i) { i.setAttribute("href", logo); });
+    document.querySelectorAll("footer img").forEach(function (i) { if (i.getAttribute("src") !== icon) i.src = icon; });
+    var fv = document.querySelector('link[rel="icon"]');
+    if (fv && fv.getAttribute("href") !== icon) fv.setAttribute("href", icon);
   }
 
   function applyTexts() {

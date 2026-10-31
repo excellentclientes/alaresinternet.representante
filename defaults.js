@@ -241,7 +241,8 @@
   var DEFAULTS = {
     texts: TEXTS, stats: stats, features: features,
     plans: plans, regions: regions, apps: apps, cards: cards,
-    reviews: reviews, faq: faq, whatsapp: whatsapp
+    reviews: reviews, faq: faq, whatsapp: whatsapp,
+    brand: { logo: "", icon: "" }
   };
 
   /* completa um conteúdo salvo com o que faltar (campos novos, etc.) */
@@ -249,7 +250,7 @@
     var d = clone(DEFAULTS);
     if (!c || typeof c !== "object") return d;
     var out = {};
-    ["texts", "whatsapp"].forEach(function (k) {
+    ["texts", "whatsapp", "brand"].forEach(function (k) {
       out[k] = Object.assign({}, d[k], (c[k] && typeof c[k] === "object") ? c[k] : {});
     });
     ["stats", "features", "plans", "regions", "apps", "cards", "reviews", "faq"].forEach(function (k) {

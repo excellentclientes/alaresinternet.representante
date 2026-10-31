@@ -182,6 +182,10 @@
      ============================================================ */
   function vTextos() {
     var out = head("Textos e números", "Edite qualquer texto do site. Dica: coloque *asteriscos* em volta de uma palavra para ela ficar em destaque azul.");
+    out.push(h("div", { class: "box" }, h("h3", null, "Logo e ícone"),
+      h("div", { class: "grid2" },
+        brandBlock("logo", "Logo (topo e robô)", { w: 700, h: 300, fit: "contain", alpha: true, max: 70000 }),
+        brandBlock("icon", "Ícone (aba do navegador e rodapé)", { w: 256, h: 256, fit: "contain", alpha: true, max: 40000 }))));
     var groups = [];
     AL.TEXT_FIELDS.forEach(function (f) { if (groups.indexOf(f.g) < 0) groups.push(f.g); });
     groups.forEach(function (g) {
@@ -331,54 +335,94 @@
       })]);
   }
 
-  /* ---------- imagens dos cartões ---------- */
+  /* ---------- imagens (tudo vira base64 leve, sozinho) ---------- */
   function adminSrc(cd) {
     if (!cd.image) return "";
     if (String(cd.image).indexOf("fs:") === 0) return images[String(cd.image).slice(3)] || "";
-    return /^https?:\/\//i.test(cd.image) ? cd.image : "";
+    return /^(https?:\/\/|data:image\/)/i.test(cd.image) ? cd.image : "";
   }
-  function resizeToDataUrl(file) {
-    return createImageBitmap(file).then(function (bmp) {
-      var W = 520, H = 720, cv = document.createElement("canvas"); cv.width = W; cv.height = H;
-      var cx = cv.getContext("2d"), s = Math.max(W / bmp.width, H / bmp.height), w = bmp.width * s, hh = bmp.height * s;
-      cx.fillStyle = "#000"; cx.fillRect(0, 0, W, H); cx.drawImage(bmp, (W - w) / 2, (H - hh) / 2, w, hh);
-      var q = .82, url = cv.toDataURL("image/jpeg", q);
-      while (url.length > 700000 && q > .4) { q -= .1; url = cv.toDataURL("image/jpeg", q); }
-      return url;
+  function loadBitmap(file) {
+    return (window.createImageBitmap ? createImageBitmap(file) : Promise.reject()).catch(function () {
+      return new Promise(function (res, rej) {
+        var u = URL.createObjectURL(file), i = new Image();
+        i.onload = function () { res(i); }; i.onerror = rej; i.src = u;
+      });
     });
+  }
+  /* Redimensiona e comprime até caber em "max" bytes. fit: cover (preenche) ou contain (mantém proporção) */
+  function toBase64(file, o) {
+    return loadBitmap(file).then(function (bmp) {
+      var bw = bmp.width || bmp.naturalWidth, bh = bmp.height || bmp.naturalHeight;
+      if (!bw || !bh) throw new Error("img");
+      var types = o.alpha ? ["image/webp", "image/png"] : ["image/webp", "image/jpeg"];
+      var best = null;
+      var sc = [1, .85, .7, .55, .42, .32];
+      for (var si = 0; si < sc.length; si++) {
+        var W, H, cv = document.createElement("canvas"), cx;
+        if (o.fit === "cover") { W = Math.round(o.w * sc[si]); H = Math.round(o.h * sc[si]); }
+        else { var k = Math.min(o.w / bw, o.h / bh, 1) * sc[si]; W = Math.max(1, Math.round(bw * k)); H = Math.max(1, Math.round(bh * k)); }
+        cv.width = W; cv.height = H; cx = cv.getContext("2d");
+        cx.imageSmoothingQuality = "high";
+        if (o.fit === "cover") {
+          var s = Math.max(W / bw, H / bh), w = bw * s, hh = bh * s;
+          cx.fillStyle = "#000"; cx.fillRect(0, 0, W, H); cx.drawImage(bmp, (W - w) / 2, (H - hh) / 2, w, hh);
+        } else cx.drawImage(bmp, 0, 0, W, H);
+        for (var ti = 0; ti < types.length; ti++) {
+          var qs = types[ti] === "image/png" ? [undefined] : [.86, .74, .62, .5];
+          for (var qi = 0; qi < qs.length; qi++) {
+            var url = cv.toDataURL(types[ti], qs[qi]);
+            if (url.indexOf("data:" + types[ti]) !== 0) break;
+            best = url;
+            if (url.length * .75 <= o.max) return url;
+          }
+          if (best && best.indexOf("data:" + types[ti]) === 0 && types[ti] !== "image/png") break;
+        }
+      }
+      return best;
+    });
+  }
+  function pickFile(cb) {
+    var f = h("input", { type: "file", accept: "image/*" });
+    f.onchange = function () { if (f.files && f.files[0]) cb(f.files[0]); };
+    f.click();
   }
   function imgBlock(cd) {
     var thumb = h("div", { class: "thumb" });
-    var urlIn = h("input", { type: "text", placeholder: "Cole o link (https://…) de uma imagem vertical" });
-    urlIn.value = (cd.image && String(cd.image).indexOf("fs:") !== 0) ? cd.image : "";
-    var file = h("input", { type: "file", accept: "image/*", hidden: true });
     function upd() {
       var s = adminSrc(cd);
       thumb.style.backgroundImage = s ? 'url("' + s.replace(/"/g, "%22") + '")' : "";
-      thumb.textContent = s ? "" : "Ilustração padrão";
+      thumb.textContent = s ? "" : "Sem imagem";
     }
     thumbUpd.push(upd); upd();
-    urlIn.oninput = function () { cd.image = urlIn.value.trim(); upd(); changed(); };
-    file.onchange = function () {
-      var f = file.files && file.files[0]; if (!f) return;
-      toast("Enviando imagem…");
-      resizeToDataUrl(f).then(function (url) {
-        return fs.setDoc(fs.doc(db, "images", cd.id), { data: url }).then(function () {
-          images[cd.id] = url; imgDirty = true; cd.image = "fs:" + cd.id; urlIn.value = ""; upd(); changed();
-          toast("Imagem enviada! Ela já aparece no site ao publicar.", "ok");
+    var drop = function (file) {
+      toBase64(file, { w: 520, h: 720, fit: "cover", alpha: false, max: 170000 }).then(function (url) {
+        var id = uid("img");
+        return fs.setDoc(fs.doc(db, "images", id), { data: url }).then(function () {
+          images[id] = url; imgDirty = true; cd.image = "fs:" + id; upd(); changed();
         });
-      }).catch(function (e) { toast(errMsg(e), "bad"); });
-      file.value = "";
+      }).catch(function (e) { toast(e && e.code ? errMsg(e) : "Não consegui usar essa imagem. Tente outra.", "bad"); });
     };
-    var rm = h("button", { class: "btn sm danger", type: "button", onclick: function () {
-      var was = String(cd.image || "");
-      cd.image = ""; urlIn.value = ""; delete images[cd.id]; imgDirty = true; upd(); changed();
-      if (was.indexOf("fs:") === 0) fs.deleteDoc(fs.doc(db, "images", cd.id)).catch(function () {});
-    } }, "Remover imagem");
     return h("div", { class: "imgrow" }, thumb, h("div", null,
-      h("label", null, "Imagem do cartão", h("span", { class: "hint" }, "vertical, de preferência 520×720"), urlIn),
-      h("div", { class: "bar" }, h("button", { class: "btn sm", type: "button", onclick: function () { file.click(); } }, "Enviar do computador"), rm, file),
-      h("span", { class: "hint" }, "Sem imagem, o site mostra uma ilustração automática.")));
+      h("div", { class: "bar" },
+        h("button", { class: "btn sm", type: "button", onclick: function () { pickFile(drop); } }, "Escolher imagem"),
+        h("button", { class: "btn sm danger", type: "button", onclick: function () { cd.image = ""; upd(); changed(); } }, "Remover"))));
+  }
+  function brandBlock(key, label, o) {
+    var prev = h("div", { class: "brandprev" + (key === "icon" ? " sq" : "") });
+    function upd() {
+      var v = draft.brand[key];
+      prev.style.backgroundImage = /^data:image\//.test(v || "") ? 'url("' + v + '")' : 'url("assets/' + (key === "logo" ? "logo.png" : "icone.png") + '")';
+    }
+    upd();
+    return h("div", { class: "brandbox" }, h("b", null, label), prev,
+      h("div", { class: "bar" },
+        h("button", { class: "btn sm", type: "button", onclick: function () {
+          pickFile(function (file) {
+            toBase64(file, o).then(function (url) { draft.brand[key] = url; upd(); changed(); })
+              .catch(function () { toast("Não consegui usar essa imagem. Tente outra.", "bad"); });
+          });
+        } }, "Trocar"),
+        h("button", { class: "btn sm danger", type: "button", onclick: function () { draft.brand[key] = ""; upd(); changed(); } }, "Voltar ao original")));
   }
   function vCards() {
     return head("Entretenimento incluso", "Os cartões que passam na faixa \"Entretenimento incluso no seu plano\". Troque a imagem, o texto sobre ela e a descrição.").concat([
@@ -398,7 +442,6 @@
         },
         make: function () { return { id: uid("c"), app: draft.apps[0] ? draft.apps[0].id : "", art: "", tag: "", title: "", image: "", desc: "" }; },
         addLabel: "+ Novo cartão",
-        onRemove: function (c) { if (String(c.image || "").indexOf("fs:") === 0) fs.deleteDoc(fs.doc(db, "images", c.id)).catch(function () {}); },
         confirm: "Excluir este cartão?"
       })]);
   }
@@ -603,6 +646,8 @@
     fs.setDoc(fs.doc(db, "site", "content"), data).then(function () {
       pubStr = JSON.stringify(draft); published = true; dirty = false;
       toast("Publicado! O site já foi atualizado para todo mundo.", "ok");
+      var used = {}; data.cards.forEach(function (c) { if (String(c.image || "").indexOf("fs:") === 0) used[String(c.image).slice(3)] = 1; });
+      Object.keys(images).forEach(function (id) { if (!used[id]) { delete images[id]; fs.deleteDoc(fs.doc(db, "images", id)).catch(function () {}); } });
     }).catch(function (e) { toast(errMsg(e), "bad"); })
       .then(function () { btn.textContent = "Publicar"; updState(); });
   }

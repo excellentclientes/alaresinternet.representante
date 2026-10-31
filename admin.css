@@ -155,3 +155,6 @@ main .sub{color:var(--mut);margin-bottom:20px;max-width:720px}
 }
 .sect h4{font-size:.78rem;color:var(--mut);margin:2px 0 8px}
 .box.err{color:var(--bad);border-color:var(--bad);background:#fef2f2}
+.brandbox{display:grid;gap:10px;align-content:start}
+.brandprev{height:110px;border:1px dashed var(--ln);border-radius:14px;background:#f4f5f8 center/contain no-repeat;background-origin:content-box;padding:14px}
+.brandprev.sq{width:110px}
