@@ -58,9 +58,10 @@
   }
   function errMsg(e) {
     var c = e && e.code || "";
-    if (c.indexOf("permission-denied") >= 0) return "Sem permissão. Confira as regras do Firestore e se o seu e-mail é o administrador (veja o README).";
-    if (c.indexOf("unavailable") >= 0 || c.indexOf("network") >= 0) return "Sem conexão com o Firebase. Tente de novo.";
-    return "Erro: " + (c || (e && e.message) || "desconhecido");
+    console.error("[painel]", e);
+    if (c.indexOf("permission-denied") >= 0 || c.indexOf("unauthenticated") >= 0) return "Esta ação não foi permitida. Saia e entre novamente com a conta autorizada.";
+    if (c.indexOf("unavailable") >= 0 || c.indexOf("network") >= 0 || c.indexOf("deadline") >= 0) return "Sem conexão com a internet. Tente novamente.";
+    return "Não foi possível concluir. Tente novamente.";
   }
 
   /* ---------- estado do rascunho ---------- */
@@ -428,7 +429,7 @@
         return fs.setDoc(fs.doc(db, "images", id), { data: url }).then(function () {
           images[id] = url; imgDirty = true; cd.image = "fs:" + id; upd(); changed();
         });
-      }).catch(function (e) { toast(e && e.code ? errMsg(e) : "Não consegui usar essa imagem. Tente outra.", "bad"); });
+      }).catch(function (e) { toast(e && e.code ? errMsg(e) : "Não foi possível usar essa imagem. Tente outra.", "bad"); });
     };
     return h("div", { class: "imgrow" }, thumb, h("div", null,
       h("div", { class: "bar" },
@@ -447,7 +448,7 @@
         h("button", { class: "btn sm", type: "button", onclick: function () {
           pickFile(function (file) {
             toBase64(file, o).then(function (url) { draft.brand[key] = url; upd(); changed(); })
-              .catch(function () { toast("Não consegui usar essa imagem. Tente outra.", "bad"); });
+              .catch(function () { toast("Não foi possível usar essa imagem. Tente outra.", "bad"); });
           });
         } }, "Trocar"),
         h("button", { class: "btn sm danger", type: "button", onclick: function () { draft.brand[key] = ""; upd(); changed(); } }, "Voltar ao original")));
@@ -624,7 +625,7 @@
     try { add(main, VIEWS[tab]()); }
     catch (e) {
       console.error(e); main.innerHTML = "";
-      add(main, h("div", { class: "box err" }, "Não consegui abrir esta aba. ", h("button", { class: "btn sm", type: "button", onclick: function () { view(); } }, "Tentar de novo")));
+      add(main, h("div", { class: "box err" }, "Não foi possível abrir esta aba. ", h("button", { class: "btn sm", type: "button", onclick: function () { view(); } }, "Tentar de novo")));
     }
     window.scrollTo(0, y);
   }
@@ -696,14 +697,14 @@
   function authErr(e) {
     var c = (e && e.code) || "";
     if (/popup-closed|cancelled-popup|user-cancelled/.test(c)) return "";
-    if (/popup-blocked/.test(c)) return "O navegador bloqueou a janela do Google. Libere pop-ups para este site e tente de novo.";
-    if (/unauthorized-domain/.test(c)) return "Este endereço ainda não está autorizado no Firebase (Authentication > Configurações > Domínios autorizados).";
-    if (/operation-not-allowed/.test(c)) return "O login com Google não está ativado no Firebase (Authentication > Método de login).";
-    if (/network/.test(c)) return "Sem conexão. Verifique a internet e tente de novo.";
-    if (/web-storage-unsupported|operation-not-supported/.test(c)) return "Este navegador está bloqueando o armazenamento de dados do site. Saia do modo anônimo ou libere cookies e dados deste site.";
-    if (/too-many/.test(c)) return "Muitas tentativas. Aguarde alguns minutos e tente de novo.";
-    if (/user-disabled/.test(c)) return "Esta conta foi desativada.";
-    return "Não foi possível entrar (" + (c || "erro") + "). Tente de novo ou use outro navegador.";
+    if (/popup-blocked/.test(c)) return "O navegador bloqueou a janela do Google. Permita pop-ups neste site e tente novamente.";
+    if (/unauthorized-domain|operation-not-allowed/.test(c)) { console.error("[painel] login:", c); return "Não foi possível entrar agora. Tente novamente em instantes."; }
+    if (/network/.test(c)) return "Sem conexão com a internet. Tente novamente.";
+    if (/web-storage-unsupported|operation-not-supported/.test(c)) return "O navegador está bloqueando o acesso. Saia da aba anônima ou permita cookies deste site.";
+    if (/too-many/.test(c)) return "Muitas tentativas. Aguarde alguns minutos e tente novamente.";
+    if (/user-disabled/.test(c)) return "Esta conta está desativada.";
+    console.error("[painel] login:", c, e);
+    return "Não foi possível entrar. Tente novamente ou use outro navegador.";
   }
   var inApp = /FBAN|FBAV|FB_IAB|Instagram|Line\/|MicroMessenger|TikTok|Snapchat|; wv\)|WhatsApp/i.test(navigator.userAgent || "");
   if (inApp) $("#lnote").hidden = false;
@@ -777,7 +778,7 @@
         }, function () {});
         subscribeLeads();
       }
-      if (restored) toast("Recuperei as alterações que você ainda não tinha publicado.", "ok");
+      if (restored) toast("Alterações não publicadas foram recuperadas.", "ok");
       else if (!published) toast("Este é o conteúdo inicial. Edite o que quiser e clique em Publicar.");
     }).catch(function (e) {
       entered = null;
@@ -795,26 +796,26 @@
   });
 
   var F = window.alaresFirebase;
-  var bootT = setTimeout(function () { if (!booted) { booted = true; showLogin("A conexão está lenta. Toque em Entrar com Google para tentar de novo."); } }, 12000);
+  var bootT = setTimeout(function () { if (!booted) { booted = true; showLogin("A conexão está lenta. Toque em Entrar com Google para tentar novamente."); } }, 12000);
   Promise.all([F.firestore(), F.auth()]).then(function (r) {
     db = r[0].db; fs = r[0].fs; auth = r[1].auth; A = r[1].a;
     if (A.getRedirectResult) A.getRedirectResult(auth).catch(function (er) { var m = authErr(er); if (m) showLogin(m); });
     A.onAuthStateChanged(auth, function (user) {
       booted = true; clearTimeout(bootT);
       if (!user) {
-        if (entered) { entered = null; showLogin("Sua sessão terminou. Entre de novo: o que você digitou ficou guardado."); }
+        if (entered) { entered = null; showLogin("Sessão encerrada. Entre novamente: as alterações não publicadas foram guardadas."); }
         else showLogin(denied ? $("#lerr").textContent : "");
         return;
       }
       if (String(user.email || "").toLowerCase() !== ALLOWED || user.emailVerified === false) {
         denied = true; entered = null; draft = null;
-        showLogin("A conta " + (user.email || "") + " não tem permissão para acessar este painel.");
+        showLogin("A conta " + (user.email || "") + " não tem acesso a este painel. Entre com a conta autorizada.");
         A.signOut(auth); return;
       }
       denied = false; enter(user);
     }, function (er) { clearTimeout(bootT); showLogin(authErr(er)); });
   }).catch(function (e) {
     console.error(e); clearTimeout(bootT);
-    showLogin("Não foi possível carregar o Firebase. Verifique a internet (ou se algum bloqueador está impedindo) e atualize a página.");
+    showLogin("Não foi possível carregar o painel. Verifique a conexão com a internet e atualize a página.");
   });
 })();
