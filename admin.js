@@ -38,7 +38,7 @@
   var draft = null, pubStr = "", published = false, dirty = false;
   var images = {}, imgDirty = true;
   var leads = [], leadsErr = "", leadsInit = false;
-  var tab = "textos", started = false;
+  var tab = "textos";
   var pvReady = false, pvMode = "d", thumbUpd = [];
   var OPEN = new WeakSet();
 
@@ -56,10 +56,12 @@
     var t = $("#toast"); t.textContent = msg; t.className = "toast on " + (kind || "");
     clearTimeout(toastT); toastT = setTimeout(function () { t.className = "toast"; }, 3800);
   }
+  var curEmail = "";
+  function whoEmail() { var e = curEmail || (auth && auth.currentUser && auth.currentUser.email) || ""; return e ? " (" + e + ")" : ""; }
   function errMsg(e) {
     var c = e && e.code || "";
     console.error("[painel]", e);
-    if (c.indexOf("permission-denied") >= 0 || c.indexOf("unauthenticated") >= 0) return "Esta ação não foi permitida. Saia e entre novamente com a conta autorizada.";
+    if (c.indexOf("permission-denied") >= 0 || c.indexOf("unauthenticated") >= 0) return "A conta conectada" + whoEmail() + " não tem permissão para esta ação. Saia e entre com a conta autorizada.";
     if (c.indexOf("unavailable") >= 0 || c.indexOf("network") >= 0 || c.indexOf("deadline") >= 0) return "Sem conexão com a internet. Tente novamente.";
     return "Não foi possível concluir. Tente novamente.";
   }
@@ -538,7 +540,13 @@
   function drawLeads() {
     if (!leadsBox || tab !== "leads") return;
     leadsBox.innerHTML = "";
-    if (leadsErr) { leadsBox.appendChild(h("div", { class: "box err" }, leadsErr)); return; }
+    if (leadsErr) {
+      leadsBox.appendChild(h("div", { class: "box err" }, h("p", { style: "margin-bottom:12px" }, leadsErr),
+        h("div", { class: "bar" },
+          h("button", { class: "btn sm", type: "button", onclick: function () { subscribeLeads(); drawLeads(); } }, "Tentar novamente"),
+          h("button", { class: "btn sm", type: "button", onclick: function () { $("#bout").click(); } }, "Trocar de conta"))));
+      return;
+    }
     var today = new Date().toDateString();
     var nNew = leads.filter(function (l) { return l.status === "novo"; }).length;
     var nToday = leads.filter(function (l) { return l.date && l.date.toDateString() === today; }).length;
@@ -579,9 +587,23 @@
       setTimeout(function () { try { c.close(); } catch (e) {} }, 400);
     } catch (e) {}
   }
+  var unsubLeads = null, unsubImgs = null;
+  function stopListeners() {
+    try { if (unsubImgs) unsubImgs(); } catch (e) {}
+    try { if (unsubLeads) unsubLeads(); } catch (e) {}
+    unsubImgs = unsubLeads = null;
+  }
+  function leadsMsg(e) {
+    var c = (e && e.code) || "";
+    console.error("[painel] pedidos de ligação:", e);
+    if (/permission-denied|unauthenticated/.test(c)) return "A conta conectada" + whoEmail() + " não tem permissão para ver os pedidos de ligação. Saia e entre com a conta autorizada.";
+    return "Não foi possível carregar os pedidos de ligação agora. Verifique a conexão e tente novamente.";
+  }
   function subscribeLeads() {
+    try { if (unsubLeads) unsubLeads(); } catch (e) {}
+    leadsInit = false; leadsErr = "";
     var q = fs.query(fs.collection(db, "leads"), fs.orderBy("createdAt", "desc"));
-    fs.onSnapshot(q, function (snap) {
+    unsubLeads = fs.onSnapshot(q, function (snap) {
       leadsErr = "";
       var fresh = [];
       if (leadsInit) snap.docChanges().forEach(function (c) { if (c.type === "added") fresh.push(c.doc.data()); });
@@ -595,8 +617,16 @@
       fresh.forEach(function (x) { toast("Nova ligação solicitada: " + x.name + " – " + x.phone, "ok"); beep(); });
       updBadge(); drawLeads();
     }, function (e) {
-      leadsErr = errMsg(e); drawLeads();
+      leadsErr = leadsMsg(e); drawLeads();
     });
+  }
+  function startListeners() {
+    stopListeners();
+    unsubImgs = fs.onSnapshot(fs.collection(db, "images"), function (s) {
+      var m = {}; s.forEach(function (d) { m[d.id] = d.data().data; });
+      images = m; imgDirty = true; thumbUpd.forEach(function (f) { f(); }); schedulePreview();
+    }, function (e) { console.error("[painel] imagens:", e); });
+    subscribeLeads();
   }
   function updBadge() {
     var n = leads.filter(function (l) { return l.status === "novo"; }).length;
@@ -754,6 +784,7 @@
     $("#boot").hidden = true; $("#login").hidden = true; $("#app").hidden = false;
     if (entered === user.uid && draft) { fitPreview(); return; }   /* mesma sessão: NÃO recarrega nem perde o que está sendo editado */
     entered = user.uid; draft = null;
+    curEmail = user.email || ""; $("#who").textContent = curEmail;
     loadContent();
   }
   function loadContent() {
@@ -770,14 +801,7 @@
       }
       dirty = !published || restored;
       drawTabs(); view(); updState(); fitPreview(); schedulePreview();
-      if (!started) {
-        started = true;
-        fs.onSnapshot(fs.collection(db, "images"), function (s) {
-          var m = {}; s.forEach(function (d) { m[d.id] = d.data().data; });
-          images = m; imgDirty = true; thumbUpd.forEach(function (f) { f(); }); schedulePreview();
-        }, function () {});
-        subscribeLeads();
-      }
+      startListeners();
       if (restored) toast("Alterações não publicadas foram recuperadas.", "ok");
       else if (!published) toast("Este é o conteúdo inicial. Edite o que quiser e clique em Publicar.");
     }).catch(function (e) {
@@ -797,12 +821,14 @@
 
   var F = window.alaresFirebase;
   var bootT = setTimeout(function () { if (!booted) { booted = true; showLogin("A conexão está lenta. Toque em Entrar com Google para tentar novamente."); } }, 12000);
-  Promise.all([F.firestore(), F.auth()]).then(function (r) {
+  F.auth().then(function (a) { return F.firestore().then(function (f) { return [f, a]; }); }).then(function (r) {
     db = r[0].db; fs = r[0].fs; auth = r[1].auth; A = r[1].a;
     if (A.getRedirectResult) A.getRedirectResult(auth).catch(function (er) { var m = authErr(er); if (m) showLogin(m); });
     A.onAuthStateChanged(auth, function (user) {
       booted = true; clearTimeout(bootT);
       if (!user) {
+        stopListeners(); clearTimeout(saveT);
+        try { if (dirty && draft) localStorage.setItem(DRAFT_KEY, JSON.stringify({ draft: draft, t: Date.now() })); } catch (e) {}
         if (entered) { entered = null; showLogin("Sessão encerrada. Entre novamente: as alterações não publicadas foram guardadas."); }
         else showLogin(denied ? $("#lerr").textContent : "");
         return;
