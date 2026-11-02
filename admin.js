@@ -654,7 +654,7 @@
   }
 
   /* ---------- login (Google) ---------- */
-  var ALLOWED = "excellentservices.excel@gmail.com";
+  var ALLOWED = "titanprimedistribuidora@gmail.com";
   var denied = false;
   function showLogin(msg) { $("#app").hidden = true; $("#login").hidden = false; if (msg) $("#lerr").textContent = msg; }
   function authErr(e) {
