@@ -36,7 +36,7 @@ Tudo no [Console do Firebase](https://console.firebase.google.com) > projeto **a
 3. **Authentication** > *Configurações* > *Domínios autorizados* > adicione
    `alaresinternetrepresentante.vercel.app`.
 4. **Regras**: copie o conteúdo de `firestore.rules` em *Firestore Database > Regras > Publicar*.
-   Elas só deixam a conta `excellentservices.excel@gmail.com` alterar o site e ler os pedidos de ligação.
+   Elas só deixam a conta `titanprimedistribuidora@gmail.com` alterar o site e ler os pedidos de ligação.
    > Este passo é o que realmente protege os dados. Sem ele o painel não consegue gravar.
 
 ## Segurança do painel

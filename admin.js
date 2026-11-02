@@ -64,9 +64,23 @@
   }
 
   /* ---------- estado do rascunho ---------- */
+  var DRAFT_KEY = "alares_draft_v1", saveT;
+  function saveDraftSoon() {
+    clearTimeout(saveT);
+    saveT = setTimeout(function () {
+      try {
+        if (dirty && draft) localStorage.setItem(DRAFT_KEY, JSON.stringify({ draft: draft, t: Date.now() }));
+        else localStorage.removeItem(DRAFT_KEY);
+      } catch (e) {}
+    }, 500);
+  }
+  function readSavedDraft() {
+    try { var o = JSON.parse(localStorage.getItem(DRAFT_KEY) || "null"); return o && o.draft ? o.draft : null; } catch (e) { return null; }
+  }
+  function clearSavedDraft() { clearTimeout(saveT); try { localStorage.removeItem(DRAFT_KEY); } catch (e) {} }
   function changed() {
     dirty = !published || JSON.stringify(draft) !== pubStr;
-    updState(); schedulePreview();
+    updState(); schedulePreview(); saveDraftSoon();
   }
   function updState() {
     var p = $("#state");
@@ -341,12 +355,26 @@
     if (String(cd.image).indexOf("fs:") === 0) return images[String(cd.image).slice(3)] || "";
     return /^(https?:\/\/|data:image\/)/i.test(cd.image) ? cd.image : "";
   }
+  function imgDims(file) {
+    return new Promise(function (res) {
+      var u = URL.createObjectURL(file), i = new Image();
+      i.onload = function () { res({ w: i.naturalWidth, h: i.naturalHeight }); URL.revokeObjectURL(u); };
+      i.onerror = function () { res(null); URL.revokeObjectURL(u); };
+      i.src = u;
+    });
+  }
   function loadBitmap(file) {
-    return (window.createImageBitmap ? createImageBitmap(file) : Promise.reject()).catch(function () {
-      return new Promise(function (res, rej) {
-        var u = URL.createObjectURL(file), i = new Image();
-        i.onload = function () { res(i); }; i.onerror = rej; i.src = u;
-      });
+    return imgDims(file).then(function (d) {
+      var big = d && Math.max(d.w, d.h) > 1800, k = big ? 1800 / Math.max(d.w, d.h) : 1;
+      var plain = function () {
+        return new Promise(function (res, rej) {
+          var u = URL.createObjectURL(file), i = new Image();
+          i.onload = function () { res(i); }; i.onerror = rej; i.src = u;
+        });
+      };
+      if (!window.createImageBitmap) return plain();
+      var opts = big ? { resizeWidth: Math.round(d.w * k), resizeHeight: Math.round(d.h * k), resizeQuality: "high" } : undefined;
+      return createImageBitmap(file, opts).catch(function () { return createImageBitmap(file); }).catch(plain);
     });
   }
   /* Redimensiona e comprime até caber em "max" bytes. fit: cover (preenche) ou contain (mantém proporção) */
@@ -592,7 +620,12 @@
     var y = window.scrollY;
     thumbUpd = [];
     var main = $("#main"); main.innerHTML = "";
-    add(main, VIEWS[tab]());
+    if (!draft) return;
+    try { add(main, VIEWS[tab]()); }
+    catch (e) {
+      console.error(e); main.innerHTML = "";
+      add(main, h("div", { class: "box err" }, "Não consegui abrir esta aba. ", h("button", { class: "btn sm", type: "button", onclick: function () { view(); } }, "Tentar de novo")));
+    }
     window.scrollTo(0, y);
   }
   function go(t) {
@@ -641,7 +674,7 @@
     var btn = $("#bpub"); btn.disabled = true; btn.textContent = "Publicando…";
     var data = JSON.parse(JSON.stringify(draft));
     fs.setDoc(fs.doc(db, "site", "content"), data).then(function () {
-      pubStr = JSON.stringify(draft); published = true; dirty = false;
+      pubStr = JSON.stringify(draft); published = true; dirty = false; clearSavedDraft();
       toast("Publicado! O site já foi atualizado para todo mundo.", "ok");
       var used = {}; data.cards.forEach(function (c) { if (String(c.image || "").indexOf("fs:") === 0) used[String(c.image).slice(3)] = 1; });
       Object.keys(images).forEach(function (id) { if (!used[id]) { delete images[id]; fs.deleteDoc(fs.doc(db, "images", id)).catch(function () {}); } });
@@ -650,31 +683,54 @@
   }
   function discard() {
     if (!confirm("Descartar tudo o que ainda não foi publicado?")) return;
-    draft = JSON.parse(pubStr); dirty = false; updState(); view(); schedulePreview();
+    draft = JSON.parse(pubStr); dirty = false; clearSavedDraft(); updState(); view(); schedulePreview();
   }
 
   /* ---------- login (Google) ---------- */
   var ALLOWED = "titanprimedistribuidora@gmail.com";
-  var denied = false;
-  function showLogin(msg) { $("#app").hidden = true; $("#login").hidden = false; if (msg) $("#lerr").textContent = msg; }
+  var denied = false, entered = null, booted = false;
+  function showLogin(msg) {
+    $("#boot").hidden = true; $("#app").hidden = true; $("#login").hidden = false;
+    $("#lerr").textContent = msg || "";
+  }
   function authErr(e) {
     var c = (e && e.code) || "";
-    if (/popup-closed|cancelled-popup/.test(c)) return "";
+    if (/popup-closed|cancelled-popup|user-cancelled/.test(c)) return "";
     if (/popup-blocked/.test(c)) return "O navegador bloqueou a janela do Google. Libere pop-ups para este site e tente de novo.";
     if (/unauthorized-domain/.test(c)) return "Este endereço ainda não está autorizado no Firebase (Authentication > Configurações > Domínios autorizados).";
     if (/operation-not-allowed/.test(c)) return "O login com Google não está ativado no Firebase (Authentication > Método de login).";
-    if (/network/.test(c)) return "Sem conexão. Verifique a internet.";
-    if (/operation-not-supported/.test(c)) return "O login não funciona abrindo o arquivo direto. Use o endereço publicado.";
-    return "Não foi possível entrar (" + (c || "erro") + ").";
+    if (/network/.test(c)) return "Sem conexão. Verifique a internet e tente de novo.";
+    if (/web-storage-unsupported|operation-not-supported/.test(c)) return "Este navegador está bloqueando o armazenamento de dados do site. Saia do modo anônimo ou libere cookies e dados deste site.";
+    if (/too-many/.test(c)) return "Muitas tentativas. Aguarde alguns minutos e tente de novo.";
+    if (/user-disabled/.test(c)) return "Esta conta foi desativada.";
+    return "Não foi possível entrar (" + (c || "erro") + "). Tente de novo ou use outro navegador.";
   }
+  var inApp = /FBAN|FBAV|FB_IAB|Instagram|Line\/|MicroMessenger|TikTok|Snapchat|; wv\)|WhatsApp/i.test(navigator.userAgent || "");
+  if (inApp) $("#lnote").hidden = false;
+  $("#lcopy").onclick = function () {
+    var url = location.href.split("#")[0];
+    var done = function () { $("#lcopy").textContent = "Link copiado ✓"; };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(done, function () { prompt("Copie este endereço:", url); });
+    else prompt("Copie este endereço:", url);
+  };
   $("#lgoogle").onclick = function () {
     var btn = $("#lgoogle"); $("#lerr").textContent = ""; denied = false;
     btn.disabled = true; $("#lgtxt").textContent = "Abrindo o Google…";
     var provider = new A.GoogleAuthProvider(); provider.setCustomParameters({ prompt: "select_account" });
-    A.signInWithPopup(auth, provider).catch(function (er) { $("#lerr").textContent = authErr(er); })
-      .then(function () { btn.disabled = false; $("#lgtxt").textContent = "Entrar com Google"; });
+    var reset = function () { btn.disabled = false; $("#lgtxt").textContent = "Entrar com Google"; };
+    A.signInWithPopup(auth, provider).catch(function (er) {
+      var c = (er && er.code) || "";
+      if (/popup-blocked|operation-not-supported/.test(c) && A.signInWithRedirect) {
+        $("#lgtxt").textContent = "Redirecionando…";
+        return A.signInWithRedirect(auth, provider);
+      }
+      $("#lerr").textContent = authErr(er);
+    }).then(reset, reset);
   };
-  $("#bout").onclick = function () { if (dirty && published && !confirm("Há alterações não publicadas. Sair mesmo assim?")) return; A.signOut(auth); };
+  $("#bout").onclick = function () {
+    if (dirty && published && !confirm("Há alterações não publicadas. Sair mesmo assim? (Elas ficam guardadas neste navegador.)")) return;
+    entered = null; draft = null; A.signOut(auth);
+  };
   $("#bpub").onclick = publish;
   $("#bdisc").onclick = discard;
   $("#bpv").onclick = function () {
@@ -692,14 +748,27 @@
   $("#pvf").addEventListener("load", function () { setTimeout(fitPreview, 30); });
 
   /* ---------- entrada ---------- */
-  function enter() {
-    $("#login").hidden = true; $("#app").hidden = false;
+  function enter(user) {
+    booted = true;
+    $("#boot").hidden = true; $("#login").hidden = true; $("#app").hidden = false;
+    if (entered === user.uid && draft) { fitPreview(); return; }   /* mesma sessão: NÃO recarrega nem perde o que está sendo editado */
+    entered = user.uid; draft = null;
+    loadContent();
+  }
+  function loadContent() {
+    $("#main").innerHTML = ""; add($("#main"), h("p", { class: "muted" }, "Carregando…"));
     fs.getDoc(fs.doc(db, "site", "content")).then(function (snap) {
       published = snap.exists();
-      draft = AL.withDefaults(published ? snap.data() : null);
-      pubStr = published ? JSON.stringify(draft) : "";
-      dirty = !published;
-      drawTabs(); view(); updState(); fitPreview();
+      var pub = AL.withDefaults(published ? snap.data() : null);
+      pubStr = published ? JSON.stringify(pub) : "";
+      var base = JSON.stringify(pub), restored = false, saved = readSavedDraft();
+      draft = pub;
+      if (saved) {
+        var sd = AL.withDefaults(saved);
+        if (JSON.stringify(sd) !== base) { draft = sd; restored = true; }
+      }
+      dirty = !published || restored;
+      drawTabs(); view(); updState(); fitPreview(); schedulePreview();
       if (!started) {
         started = true;
         fs.onSnapshot(fs.collection(db, "images"), function (s) {
@@ -708,24 +777,44 @@
         }, function () {});
         subscribeLeads();
       }
-      if (!published) toast("Este é o conteúdo inicial. Edite o que quiser e clique em Publicar.");
-    }).catch(function (e) { toast(errMsg(e), "bad"); });
+      if (restored) toast("Recuperei as alterações que você ainda não tinha publicado.", "ok");
+      else if (!published) toast("Este é o conteúdo inicial. Edite o que quiser e clique em Publicar.");
+    }).catch(function (e) {
+      entered = null;
+      var main = $("#main"); main.innerHTML = "";
+      add(main, h("div", { class: "box err" }, errMsg(e) + " ", h("button", { class: "btn sm", type: "button", onclick: function () { entered = true; loadContent(); } }, "Tentar de novo")));
+    });
   }
 
+  /* erros inesperados não derrubam o painel */
+  window.addEventListener("error", function (e) { console.error(e.error || e.message); });
+  window.addEventListener("unhandledrejection", function (e) {
+    console.error(e.reason);
+    var c = e.reason && e.reason.code || "";
+    if (c) toast(errMsg(e.reason), "bad");
+  });
+
   var F = window.alaresFirebase;
+  var bootT = setTimeout(function () { if (!booted) { booted = true; showLogin("A conexão está lenta. Toque em Entrar com Google para tentar de novo."); } }, 12000);
   Promise.all([F.firestore(), F.auth()]).then(function (r) {
     db = r[0].db; fs = r[0].fs; auth = r[1].auth; A = r[1].a;
+    if (A.getRedirectResult) A.getRedirectResult(auth).catch(function (er) { var m = authErr(er); if (m) showLogin(m); });
     A.onAuthStateChanged(auth, function (user) {
-      if (!user) { showLogin(denied ? $("#lerr").textContent : ""); return; }
+      booted = true; clearTimeout(bootT);
+      if (!user) {
+        if (entered) { entered = null; showLogin("Sua sessão terminou. Entre de novo: o que você digitou ficou guardado."); }
+        else showLogin(denied ? $("#lerr").textContent : "");
+        return;
+      }
       if (String(user.email || "").toLowerCase() !== ALLOWED || user.emailVerified === false) {
-        denied = true;
+        denied = true; entered = null; draft = null;
         showLogin("A conta " + (user.email || "") + " não tem permissão para acessar este painel.");
         A.signOut(auth); return;
       }
-      denied = false; enter();
-    });
+      denied = false; enter(user);
+    }, function (er) { clearTimeout(bootT); showLogin(authErr(er)); });
   }).catch(function (e) {
-    console.error(e);
-    $("#lerr").textContent = "Não foi possível carregar o Firebase. Verifique a internet e tente de novo.";
+    console.error(e); clearTimeout(bootT);
+    showLogin("Não foi possível carregar o Firebase. Verifique a internet (ou se algum bloqueador está impedindo) e atualize a página.");
   });
 })();

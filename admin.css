@@ -138,7 +138,7 @@ main .sub{color:var(--mut);margin-bottom:20px;max-width:720px}
 
 @media(max-width:1180px){
   .shell,.shell.nopv{grid-template-columns:190px minmax(0,1fr)}
-  .pv{display:none;position:fixed;inset:57px 0 0 0;z-index:40;height:auto;border:0}
+  .pv{display:none;position:fixed;inset:0;z-index:80;height:100vh;height:100dvh;align-self:stretch;border:0}
   .shell.pvopen .pv{display:flex}
   .pvbar #pvclose{display:inline-flex}
 }
@@ -159,3 +159,9 @@ main .sub{color:var(--mut);margin-bottom:20px;max-width:720px}
 .brandprev{height:110px;border:1px dashed var(--ln);border-radius:14px;background:#f4f5f8 center/contain no-repeat;background-origin:content-box;padding:14px}
 .brandprev.sq{width:110px}
 .wapre{white-space:pre-wrap;font:inherit;background:#e7fbe9;border:1px solid #b7e8bd;border-radius:14px;padding:14px 16px;color:#0b3d17;line-height:1.55}
+
+.boot{position:fixed;inset:0;z-index:60;display:grid;place-content:center;justify-items:center;gap:14px;background:#060913;color:rgba(255,255,255,.7);font-weight:600;font-size:.9rem}
+.boot i{width:34px;height:34px;border-radius:50%;border:3px solid rgba(255,255,255,.15);border-top-color:#00c2ff;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.lnote{margin-top:14px;padding:11px 13px;border-radius:12px;background:rgba(245,158,11,.14);border:1px solid rgba(245,158,11,.4);color:#ffd9a0;font-size:.8rem;line-height:1.5}
+.lnote button{display:block;margin:8px auto 0;border:0;border-radius:9px;padding:7px 14px;background:#fff;color:#1f2430;font-weight:700;cursor:pointer;font-size:.8rem}

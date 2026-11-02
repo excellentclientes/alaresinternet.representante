@@ -13,7 +13,8 @@
 <body>
 
 <!-- LOGIN -->
-<div id="login" class="login">
+<div id="boot" class="boot"><i></i><span>Carregando painel…</span></div>
+<div id="login" class="login" hidden>
   <div class="lbg" aria-hidden="true"><i class="o1"></i><i class="o2"></i><i class="o3"></i><div class="grid"></div></div>
   <section class="lbox">
     <div class="lbadge"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10.5" width="16" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg> Área restrita</div>
@@ -25,6 +26,7 @@
       <span id="lgtxt">Entrar com Google</span>
     </button>
     <div id="lerr" class="lerr" role="alert"></div>
+    <div id="lnote" class="lnote" hidden>Parece que você abriu por dentro de outro aplicativo, que pode bloquear o login do Google. Abra no <b>Chrome</b> ou <b>Safari</b>.<button type="button" id="lcopy">Copiar link</button></div>
     <p class="lfoot"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 4.5 3.3 8.4 8 9 4.7-.6 8-4.5 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg> Acesso permitido somente à conta autorizada.</p>
   </section>
   <a class="lback" href="/">← Voltar ao site</a>

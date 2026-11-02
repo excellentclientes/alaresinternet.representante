@@ -2,7 +2,7 @@ rules_version = '2';
 
 // ============================================================
 //  REGRAS DO FIRESTORE – projeto alares-internet
-//  Só a conta Google excellentservices.excel@gmail.com
+//  Só a conta Google titanprimedistribuidora@gmail.com
 //  consegue alterar o site e ler os pedidos de ligação.
 //  Cole tudo em Firestore Database > Regras > Publicar.
 // ============================================================
@@ -11,7 +11,7 @@ service cloud.firestore {
 
     function isAdmin() {
       return request.auth != null
-          && request.auth.token.email == 'excellentservices.excel@gmail.com'
+          && request.auth.token.email == 'titanprimedistribuidora@gmail.com'
           && request.auth.token.email_verified == true;
     }
 

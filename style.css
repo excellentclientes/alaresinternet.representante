@@ -250,3 +250,8 @@ footer img{filter:brightness(0) invert(1)}
 .chip{z-index:3}
 .c2{bottom:3%;left:-16%}
 @media(max-width:860px){.c2{bottom:-9%;left:0}.c1{top:0;right:0}}
+
+/* compatibilidade com navegadores mais antigos */
+header{background:rgba(18,54,214,.92);background:color-mix(in srgb,#1236d6 78%,transparent)}
+.pc{max-height:calc(100vh - 40px);max-height:calc(100dvh - 40px)}
+@media(max-width:560px){.pc{max-height:92vh;max-height:92dvh}}
