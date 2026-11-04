@@ -91,7 +91,6 @@
     { g: "Dúvidas frequentes", k: "faqText", l: "Subtítulo", long: true },
     { g: "Faixa final (azul)", k: "ctaTitle", l: "Título" },
     { g: "Faixa final (azul)", k: "ctaText", l: "Texto", long: true },
-    { g: "Faixa final (azul)", k: "ctaBtn1", l: "Botão 1" },
     { g: "Faixa final (azul)", k: "ctaBtn2", l: "Botão 2 (abre o pedido de ligação)" },
     { g: "Pedido de ligação (janela)", k: "callTitle", l: "Título" },
     { g: "Pedido de ligação (janela)", k: "callText", l: "Texto", long: true },
@@ -128,7 +127,7 @@
     revTitle: "Quem usa, *recomenda*", revText: "Nota 4,9 em mais de 38 mil avaliações.",
     faqTitle: "Conheça as *dúvidas frequentes*", faqText: "Tudo o que você precisa saber antes de assinar.",
     ctaTitle: "Pronto para navegar sem limites?", ctaText: "Instalação em até 24h e 30 dias de satisfação garantida.",
-    ctaBtn1: "Assinar agora", ctaBtn2: "Solicitar ligação",
+    ctaBtn2: "Solicitar ligação",
     callTitle: "Solicitar ligação", callText: "Deixe seus dados e um consultor liga para você em até 5 minutos.",
     callNameLabel: "Seu nome", callNamePh: "Como podemos te chamar?", callPhoneLabel: "Telefone com DDD",
     callBtn: "Quero receber a ligação", callNote: "Usamos seu número apenas para este contato.",
@@ -229,7 +228,6 @@
 
   var whatsapp = {
     number: "5515999999999",
-    tooltip: "Fale conosco",
     floatMsg: "Olá! Quero conhecer os planos da Alares"
   };
 

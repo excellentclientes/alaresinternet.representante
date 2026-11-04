@@ -509,7 +509,7 @@
     var numIn = num.querySelector("input"); numIn.type = "text"; numIn.inputMode = "numeric"; numIn.value = w.number || "";
     numIn.oninput = function () { w.number = digits(numIn.value); changed(); };
     return head("WhatsApp", "O número vale para o botão flutuante e para todos os botões \"Contratar\" e \"Assinar\".").concat([
-      h("div", { class: "box" }, h("div", { class: "grid2" }, num, fText(w, "tooltip", "Texto do balão do botão verde")),
+      h("div", { class: "box" }, num,
         fText(w, "floatMsg", "Mensagem do botão verde flutuante", { area: true, rows: 2, cls: "span2" })),
       h("div", { class: "box" }, h("h3", null, "Mensagem ao clicar em Contratar / Assinar"),
         h("p", { class: "muted", style: "margin-bottom:10px" }, "Montada sozinha com os dados do plano escolhido (velocidade, preço, região, itens e aplicativos). Prévia com o primeiro plano:"),

@@ -59,7 +59,6 @@
     applyBrand();
     var wa = $("#wa");
     wa.href = waUrl(S.c.whatsapp.floatMsg);
-    $("#wat").textContent = S.c.whatsapp.tooltip || "";
     S.first = false;
   }
 
