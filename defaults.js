@@ -230,11 +230,24 @@
     floatMsg: "Olá! Quero conhecer os planos da Alares"
   };
 
+  /* ---------- cabeçalho (menu + botão) ---------- */
+  var header = {
+    links: [
+      { label: "Planos", action: "section", target: "planos", url: "", msg: "" },
+      { label: "Vantagens", action: "section", target: "vantagens", url: "", msg: "" },
+      { label: "Serviços", action: "section", target: "servicos", url: "", msg: "" },
+      { label: "Avaliações", action: "section", target: "avaliacoes", url: "", msg: "" },
+      { label: "Dúvidas", action: "section", target: "duvidas", url: "", msg: "" }
+    ],
+    button: { label: "Suporte", action: "whatsapp", target: "planos", url: "", msg: "Olá! Preciso de suporte." }
+  };
+
   var DEFAULTS = {
     texts: TEXTS, stats: stats, features: features,
     plans: plans, regions: regions, apps: apps, cards: cards,
     reviews: reviews, faq: faq, whatsapp: whatsapp,
-    brand: { logo: "", icon: "" }
+    brand: { logo: "", icon: "" },
+    header: header
   };
 
   /* completa um conteúdo salvo com o que faltar (campos novos, etc.) */
@@ -248,6 +261,11 @@
     ["stats", "features", "plans", "regions", "apps", "cards", "reviews", "faq"].forEach(function (k) {
       out[k] = Array.isArray(c[k]) ? c[k] : d[k];
     });
+    var ch = (c.header && typeof c.header === "object") ? c.header : {};
+    out.header = {
+      links: Array.isArray(ch.links) ? ch.links : d.header.links,
+      button: Object.assign({}, d.header.button, (ch.button && typeof ch.button === "object") ? ch.button : {})
+    };
     out.plans.forEach(function (p) {
       if (!Array.isArray(p.features)) p.features = [];
       if (!Array.isArray(p.apps)) p.apps = [];

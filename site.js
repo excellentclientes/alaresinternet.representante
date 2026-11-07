@@ -57,10 +57,39 @@
     renderReviews();
     renderFaq();
     applyBrand();
+    renderHeader();
     var wa = $("#wa");
     wa.href = waUrl(S.c.whatsapp.floatMsg);
     S.first = false;
   }
+
+  /* ---------- cabeçalho: menu e botão configuráveis ---------- */
+  function linkAttrs(it) {
+    var a = it.action || "section";
+    if (a === "whatsapp") return { href: waUrl(it.msg || S.c.whatsapp.floatMsg), ext: true };
+    if (a === "call") return { href: "#", call: true };
+    if (a === "url") return { href: /^(https?:\/\/|tel:|mailto:)/i.test(it.url || "") ? it.url : "#", ext: /^https?:/i.test(it.url || "") };
+    return { href: it.target && it.target !== "topo" ? "#" + it.target : "#" };
+  }
+  function linkHtml(it, cls, extra) {
+    var l = linkAttrs(it);
+    return '<a' + (cls ? ' class="' + cls + '"' : "") + (extra ? " " + extra : "") + ' href="' + esc(l.href) + '"' +
+      (l.ext ? ' target="_blank" rel="noopener"' : "") + (l.call ? " data-call" : "") + ">" + esc(it.label) + "</a>";
+  }
+  function renderHeader() {
+    var hd = S.c.header;
+    $("#navl").innerHTML = hd.links.map(function (it) { return "<li>" + linkHtml(it) + "</li>"; }).join("");
+    var b = hd.button, l = linkAttrs(b), el = $("#navbtn");
+    el.textContent = b.label || "";
+    el.setAttribute("href", l.href);
+    if (l.ext) { el.setAttribute("target", "_blank"); el.setAttribute("rel", "noopener"); } else { el.removeAttribute("target"); el.removeAttribute("rel"); }
+    if (l.call) el.setAttribute("data-call", ""); else el.removeAttribute("data-call");
+    el.style.display = b.label ? "" : "none";
+  }
+  $("header").addEventListener("click", function (e) {
+    var a = e.target.closest("[data-call]");
+    if (a) { e.preventDefault(); op(); }
+  });
 
   function applyBrand() {
     var b = (S.c && S.c.brand) || {};
@@ -392,6 +421,7 @@
         setContent(AL.withDefaults(d.content));
         window.scrollTo(0, st);
       } else if (d.type === "alares-goto") {
+        if (d.id === "topo") { window.scrollTo({ top: 0, behavior: "smooth" }); return; }
         var el = document.getElementById(d.id);
         if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
       }

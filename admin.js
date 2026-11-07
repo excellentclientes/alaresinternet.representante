@@ -43,11 +43,11 @@
   var OPEN = new WeakSet();
 
   var TABS = [
-    ["textos", "Textos e números"], ["planos", "Planos"], ["regioes", "Regiões"], ["apps", "Aplicativos"],
+    ["textos", "Textos e números"], ["cabecalho", "Cabeçalho"], ["planos", "Planos"], ["regioes", "Regiões"], ["apps", "Aplicativos"],
     ["cards", "Entretenimento"], ["avaliacoes", "Avaliações"], ["faq", "Dúvidas"], ["whatsapp", "WhatsApp"],
     ["_"], ["leads", "Ligações recebidas"]
   ];
-  var GOTO = { planos: "planos", regioes: "planos", apps: "planos", cards: "servicos", avaliacoes: "avaliacoes", faq: "duvidas" };
+  var GOTO = { cabecalho: "topo", planos: "planos", regioes: "planos", apps: "planos", cards: "servicos", avaliacoes: "avaliacoes", faq: "duvidas" };
   var iconOpts = Object.keys(AL.ICONS).map(function (k) { return [k, AL.ICONS[k]]; });
 
   /* ---------- avisos ---------- */
@@ -636,7 +636,40 @@
   }
 
   /* ---------- navegação ---------- */
-  var VIEWS = { textos: vTextos, planos: vPlanos, regioes: vRegioes, apps: vApps, cards: vCards, avaliacoes: vAval, faq: vFaq, whatsapp: vWhats, leads: vLeads };
+  /* ---------- cabeçalho ---------- */
+  var SECTIONS = [["topo", "Topo da página"], ["planos", "Planos"], ["vantagens", "Vantagens"], ["servicos", "Serviços / Entretenimento"], ["avaliacoes", "Avaliações"], ["duvidas", "Dúvidas frequentes"]];
+  var ACTIONS = [["section", "Rolar até uma parte do site"], ["whatsapp", "Abrir o WhatsApp"], ["call", "Abrir o pedido de ligação"], ["url", "Abrir um link"]];
+  function actionFields(o) {
+    var box = h("div", { style: "display:grid;gap:12px" });
+    function draw() {
+      box.innerHTML = "";
+      var sel = fSelect(o, "action", "Ao clicar", ACTIONS);
+      sel.querySelector("select").addEventListener("change", draw);
+      box.appendChild(sel);
+      if (o.action === "section" || !o.action) box.appendChild(fSelect(o, "target", "Parte do site", SECTIONS));
+      if (o.action === "whatsapp") box.appendChild(fText(o, "msg", "Mensagem já escrita no WhatsApp", { area: true, rows: 2, hint: "o número é o da aba WhatsApp" }));
+      if (o.action === "url") box.appendChild(fText(o, "url", "Endereço do link", { ph: "https://…" }));
+    }
+    draw();
+    return box;
+  }
+  function vHeader() {
+    var hd = draft.header;
+    return head("Cabeçalho", "Menu e botão do topo do site: o nome de cada um e o que acontece ao clicar.").concat([
+      h("div", { class: "box" }, h("h3", null, "Botão em destaque (à direita)"),
+        h("div", { style: "display:grid;gap:12px" },
+          fText(hd.button, "label", "Nome do botão", { hint: "deixe vazio para esconder o botão" }),
+          actionFields(hd.button))),
+      h("div", { class: "box" }, h("h3", null, "Links do menu"),
+        itemList(hd.links, {
+          title: function (l) { return l.label || "Sem nome"; },
+          body: function (l) { return h("div", { style: "display:grid;gap:12px" }, fText(l, "label", "Nome do link"), actionFields(l)); },
+          make: function () { return { label: "Novo link", action: "section", target: "planos", url: "", msg: "" }; },
+          addLabel: "+ Novo link", confirm: "Excluir este link do menu?", empty: "Nenhum link no menu."
+        }))]);
+  }
+
+  var VIEWS = { textos: vTextos, cabecalho: vHeader, planos: vPlanos, regioes: vRegioes, apps: vApps, cards: vCards, avaliacoes: vAval, faq: vFaq, whatsapp: vWhats, leads: vLeads };
   function drawTabs() {
     var nav = $("#tabs"); nav.innerHTML = "";
     TABS.forEach(function (t) {
