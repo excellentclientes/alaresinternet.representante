@@ -443,4 +443,23 @@
       }, function (err) { console.warn("Firestore (imagens):", err && err.code); });
     }).catch(function (err) { console.warn("Firebase indisponível, usando conteúdo padrão.", err); });
   }
+
+  /* Navegação interna sem alterar o endereço (nunca mostra #algo) */
+  function goTo(id) {
+    var el = id ? document.getElementById(id) : null;
+    if (el) { var y = el.getBoundingClientRect().top + window.pageYOffset - 80; window.scrollTo({ top: Math.max(0, y), behavior: "smooth" }); }
+    else window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest ? e.target.closest("a[href^='#']") : null;
+    if (!a || a.id === "wa" || a.target === "_blank") return;
+    e.preventDefault();
+    var id = (a.getAttribute("href") || "").slice(1);
+    goTo(id === "topo" ? "" : id);
+  });
+  if (location.hash) {
+    var h = location.hash.slice(1);
+    history.replaceState(null, "", location.pathname + location.search);
+    setTimeout(function () { goTo(h); }, 400);
+  }
 })();
